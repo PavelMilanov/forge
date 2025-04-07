@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -18,8 +17,6 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Fatal("ошибка при создании клиента Docker")
 	}
-	fmt.Println(cli)
-
 	logrus.SetLevel(logrus.TraceLevel)
 	logrus.SetReportCaller(true)
 	logrus.SetFormatter(&logrus.TextFormatter{

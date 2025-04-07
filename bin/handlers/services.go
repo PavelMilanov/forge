@@ -13,6 +13,10 @@ func (h *Handler) getServices(c *gin.Context) {
 	project := c.Param("project")
 	dir := c.GetHeader("X-Project-Dir")
 	file := c.GetHeader("X-Compose-File")
+	if dir == "" || file == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Не указаны заголовки X-Project-Dir и X-Compose-File"})
+		return
+	}
 	path := filepath.Join(dir, file)
 	var compose core.DockerCompose
 	if err := compose.Parse(path); err != nil {

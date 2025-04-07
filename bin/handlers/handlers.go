@@ -26,6 +26,11 @@ func (h *Handler) InitRouters() *gin.Engine {
 		containers := v1.Group("/containers/")
 		{
 			containers.GET("/", h.getContainers)
+			containers.GET("/inspect/:id", h.getContainer)
+			containers.GET("/logs/:id", h.getLogsContainer)
+			containers.PATCH("/stop/:id", h.stopContainer)
+			containers.PATCH("/restart/:id", h.restartContainer)
+			containers.PATCH("/start/:id", h.startContainer)
 		}
 	}
 	return router
