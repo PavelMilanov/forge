@@ -9,8 +9,7 @@ var compose DockerCompose
 var composeFile = "docker-compose.yaml"
 
 func createFile(name string) {
-	text := `name: my_compose
-services:
+	text := `services:
   web:
     image: nginx:latest
     container_name: my_nginx

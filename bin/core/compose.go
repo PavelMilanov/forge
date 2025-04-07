@@ -3,11 +3,11 @@ package core
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 
 	"github.com/compose-spec/compose-go/v2/loader"
-	"github.com/compose-spec/compose-go/v2/types"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,18 +17,23 @@ type DockerCompose struct {
 }
 
 func (compose *DockerCompose) Parse(file string) error {
-	project, err := loader.LoadWithContext(
-		context.Background(),
-		types.ConfigDetails{
-			ConfigFiles: []types.ConfigFile{{
-				Filename: file,
-			}},
-			Environment: nil,
-		},
-	)
+	ctx := context.Background()
+
+	// Загружаем конфигурационные файлы.
+	// Второй параметр – список файлов, а третий – рабочая директория.
+	configDetails, err := loader.LoadConfigFiles(ctx, []string{file}, ".")
 	if err != nil {
-		logrus.Error(err)
-		return err
+		return fmt.Errorf("error loading config files: %w", err)
+	}
+
+	// Парсим загруженную конфигурацию и получаем compose проект.
+	project, err := loader.LoadWithContext(ctx, *configDetails, func(o *loader.Options) {
+		if name, ok := o.GetProjectName(); !ok || name == "" {
+			o.SetProjectName("default_project", true)
+		}
+	})
+	if err != nil {
+		return fmt.Errorf("error loading project: %w", err)
 	}
 
 	for _, service := range project.Services {
