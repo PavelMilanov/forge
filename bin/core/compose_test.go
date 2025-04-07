@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var compose DockerCompose
+var compose Compose
 var composeFile = "docker-compose.yaml"
 
 func createFile(name string) {
@@ -24,9 +24,6 @@ func TestCompose(t *testing.T) {
 	createFile(composeFile)
 	t.Run("run", func(t *testing.T) {
 		compose.Command("up", composeFile)
-	})
-	t.Run("parse", func(t *testing.T) {
-		compose.Parse(composeFile)
 	})
 	t.Run("stop", func(t *testing.T) {
 		compose.Command("down", composeFile)

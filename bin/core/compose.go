@@ -6,48 +6,64 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 
 	"github.com/compose-spec/compose-go/v2/loader"
+	"github.com/compose-spec/compose-go/v2/types"
 	"github.com/sirupsen/logrus"
 )
 
-type DockerCompose struct {
-	Images     []string
-	Containers []string
+// Модель для взаимодействия с сущноснями Docker Compose.
+type Compose struct {
+	App *types.Project
+	Dir string
 }
 
-func (compose *DockerCompose) Parse(file string) error {
-	ctx := context.Background()
-
-	// Загружаем конфигурационные файлы.
-	// Второй параметр – список файлов, а третий – рабочая директория.
-	configDetails, err := loader.LoadConfigFiles(ctx, []string{file}, ".")
+// NewCompose инициализирует docker-compose файл.
+func NewCompose(file string) (*Compose, error) {
+	dirs := strings.Split(filepath.Dir(file), "/")
+	projectName := dirs[len(dirs)-1]
+	project, err := loader.LoadWithContext(context.Background(), types.ConfigDetails{
+		ConfigFiles: []types.ConfigFile{{
+			Filename: file,
+		}},
+	},
+		func(o *loader.Options) {
+			if name, ok := o.GetProjectName(); !ok || name == "" {
+				o.SetProjectName(projectName, true)
+			}
+		})
 	if err != nil {
-		return fmt.Errorf("error loading config files: %w", err)
+		return nil, fmt.Errorf("error loading project: %w", err)
 	}
+	return &Compose{
+		App: project,
+		Dir: filepath.Dir(file)}, nil
+}
 
-	// Парсим загруженную конфигурацию и получаем compose проект.
-	project, err := loader.LoadWithContext(ctx, *configDetails, func(o *loader.Options) {
-		if name, ok := o.GetProjectName(); !ok || name == "" {
-			o.SetProjectName("default_project", true)
-		}
-	})
+func (c *Compose) Deploy() error {
+	//  вычислить образа
+	// вычислить запущенные контейнеры
+	// привести в соответсвие
+	// проверить соостояние
+	// 1. если нет запущенных контейнеров проекта - запустить
+	// 2. если есть запущенные контейнеры проекта - проверить актуальность
+	// 3. обновить
+	// 4. проверить
+	docker, err := NewDocker()
 	if err != nil {
-		return fmt.Errorf("error loading project: %w", err)
+		return fmt.Errorf("error %w", err)
 	}
-
-	for _, service := range project.Services {
-		compose.Images = append(compose.Images, service.Image)
-		if service.ContainerName == "" {
-			logrus.Warnf("у сервиса %s не указано имя контейнера", service.Name)
-			continue
-		}
-		compose.Containers = append(compose.Containers, service.ContainerName)
+	containers, err := docker.GetProjectContainers(c.Dir)
+	if err != nil {
+		return fmt.Errorf("error %w", err)
 	}
+	fmt.Println("Запущенные контейнеры: ", len(containers))
 	return nil
 }
 
-func (compose *DockerCompose) Command(file, command string) error {
+func (compose *Compose) Command(file, command string) error {
 	switch command {
 	case "up":
 		cmd := exec.Command("docker", "compose", "-f", file, "up", "-d")

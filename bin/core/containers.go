@@ -9,20 +9,33 @@ import (
 	"github.com/docker/docker/pkg/stdcopy"
 )
 
-func GetContainers(client *client.Client, file string) ([]container.Summary, error) {
+// Модель для взаимодействия с сущноснями Docker.
+type Docker struct {
+	client *client.Client
+}
+
+// NewDocker инициализирует клиента docker.
+func NewDocker() (*Docker, error) {
+	cli, err := client.NewClientWithOpts(client.FromEnv)
+	if err != nil {
+		return nil, err
+	}
+	return &Docker{client: cli}, nil
+}
+
+func (d *Docker) GetProjectContainers(project string) ([]container.Summary, error) {
 	var projectInfo []container.Summary
-	info, err := client.ContainerList(context.Background(), container.ListOptions{})
+	info, err := d.client.ContainerList(context.Background(), container.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
 	for _, container := range info {
 		for _, label := range container.Labels {
-			if label == file {
+			if label == project {
 				projectInfo = append(projectInfo, container)
 			}
 		}
 	}
-
 	return projectInfo, nil
 }
 
