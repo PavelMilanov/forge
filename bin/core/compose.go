@@ -10,13 +10,13 @@ import (
 
 	"github.com/compose-spec/compose-go/v2/loader"
 	"github.com/compose-spec/compose-go/v2/types"
-	"github.com/sirupsen/logrus"
 )
 
 // Модель для взаимодействия с сущноснями Docker Compose.
 type Compose struct {
-	App *types.Project
-	Dir string
+	App  *types.Project
+	Dir  string
+	File string
 }
 
 // NewCompose инициализирует docker-compose файл.
@@ -39,8 +39,10 @@ func NewCompose(file string) (*Compose, error) {
 		return nil, fmt.Errorf("error loading project: %w", err)
 	}
 	return &Compose{
-		App: project,
-		Dir: filepath.Dir(path)}, nil
+		App:  project,
+		Dir:  filepath.Dir(path),
+		File: path,
+	}, nil
 }
 
 func (c *Compose) Deploy() error {
@@ -60,35 +62,37 @@ func (c *Compose) Deploy() error {
 	if err != nil {
 		return fmt.Errorf("error %w", err)
 	}
-	fmt.Println("Запущенные контейнеры: ", len(containers))
-	return nil
-}
-
-func (compose *Compose) Command(file, command string) error {
-	switch command {
-	case "up":
-		cmd := exec.Command("docker", "compose", "-f", file, "up", "-d")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			logrus.Errorf("Ошибка запуска Compose: %v", err)
-			return err
-		}
-		logrus.Info("Docker Compose успешно запущен")
-		return nil
-	case "down":
-		cmd := exec.Command("docker", "compose", "-f", file, "down")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			logrus.Errorf("Ошибка остановки Compose: %v", err)
-			return err
-		}
-		logrus.Info("Docker Compose успешно остановлен")
+	switch len(containers) {
+	case 0:
+		c.command("up")
 		return nil
 	default:
-		logrus.Errorf("Неизвестная команда: %s", command)
+		fmt.Println("обновление не требуется")
+		return nil
+	}
+}
+
+func (c *Compose) command(command string) error {
+	switch command {
+	case "up":
+		cmd := exec.Command("docker", "compose", "-f", c.File, "up", "-d")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("error %w", err)
+		}
+		fmt.Println("Docker Compose успешно запущен")
+		return nil
+	case "down":
+		cmd := exec.Command("docker", "compose", "-f", c.File, "down")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("error %w", err)
+		}
+		fmt.Println("Docker Compose успешно остановлен")
+		return nil
+	default:
 		return errors.New("неизвестная команда")
 	}
-
 }

@@ -25,5 +25,17 @@ func TestNewCompose(t *testing.T) {
 		}
 		t.Log(c.Dir)
 	})
+}
 
+func TestCommand(t *testing.T) {
+	c, err := NewCompose("test/docker-compose.yaml")
+	if err != nil {
+		t.Errorf("error: %v", err)
+	}
+	t.Run("up", func(t *testing.T) {
+		c.command("up")
+	})
+	t.Run("down", func(t *testing.T) {
+		c.command("down")
+	})
 }
