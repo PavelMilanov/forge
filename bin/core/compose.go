@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"github.com/compose-spec/compose-go/v2/loader"
 	"github.com/compose-spec/compose-go/v2/types"
@@ -22,16 +21,18 @@ type Compose struct {
 
 // NewCompose инициализирует docker-compose файл.
 func NewCompose(file string) (*Compose, error) {
-	dirs := strings.Split(filepath.Dir(file), "/")
-	projectName := dirs[len(dirs)-1]
+	path, err := filepath.Abs(file)
+	if err != nil {
+		return nil, fmt.Errorf("error getting absolute path: %w", err)
+	}
 	project, err := loader.LoadWithContext(context.Background(), types.ConfigDetails{
 		ConfigFiles: []types.ConfigFile{{
-			Filename: file,
+			Filename: path,
 		}},
 	},
 		func(o *loader.Options) {
 			if name, ok := o.GetProjectName(); !ok || name == "" {
-				o.SetProjectName(projectName, true)
+				o.SetProjectName("forge", true)
 			}
 		})
 	if err != nil {
@@ -39,7 +40,7 @@ func NewCompose(file string) (*Compose, error) {
 	}
 	return &Compose{
 		App: project,
-		Dir: filepath.Dir(file)}, nil
+		Dir: filepath.Dir(path)}, nil
 }
 
 func (c *Compose) Deploy() error {

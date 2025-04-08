@@ -1,12 +1,10 @@
 package core
 
 import (
-	"os"
 	"testing"
 )
 
 func TestGetProjectContainers(t *testing.T) {
-	createFile("compose.yaml")
 	docker, _ := NewDocker()
 	containers, err := docker.GetProjectContainers(".")
 	if err != nil {
@@ -15,7 +13,6 @@ func TestGetProjectContainers(t *testing.T) {
 	for _, container := range containers {
 		t.Logf("%+v", container)
 	}
-	os.Remove("compose.yaml")
 }
 
 // func TestGetContainer(t *testing.T) {
