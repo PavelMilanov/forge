@@ -11,7 +11,7 @@ import (
 
 // Модель для взаимодействия с сущноснями Docker.
 type Docker struct {
-	client *client.Client
+	Client *client.Client
 }
 
 // NewDocker инициализирует клиента docker.
@@ -20,12 +20,12 @@ func NewDocker() (*Docker, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Docker{client: cli}, nil
+	return &Docker{Client: cli}, nil
 }
 
 func (d *Docker) GetProjectContainers(project string) ([]container.Summary, error) {
 	var projectInfo []container.Summary
-	info, err := d.client.ContainerList(context.Background(), container.ListOptions{})
+	info, err := d.Client.ContainerList(context.Background(), container.ListOptions{})
 	if err != nil {
 		return nil, err
 	}

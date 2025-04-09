@@ -4,7 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 
+	"github.com/PavelMilanov/forge/config"
 	"github.com/PavelMilanov/forge/core"
 )
 
@@ -19,6 +21,9 @@ func main() {
 			fmt.Println(err)
 		}
 		compose.Deploy()
+	case "version":
+		text := fmt.Sprintf("forge : %s\ngo: %s", config.VERSION, runtime.Version())
+		fmt.Println(text)
 	default:
 		fmt.Println("command not found")
 	}
