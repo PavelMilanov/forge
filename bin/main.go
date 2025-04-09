@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -22,7 +23,9 @@ func main() {
 		}
 		compose.Deploy()
 	case "version":
-		text := fmt.Sprintf("forge : %s\ngo: %s", config.VERSION, runtime.Version())
+		cli, _ := core.NewDocker()
+		info, _ := cli.Client.ServerVersion(context.Background())
+		text := fmt.Sprintf("Forge : %s\nGo: %s\nlatfom: %s\nDocker: %s", config.VERSION, runtime.Version(), info.Platform.Name, info.Version)
 		fmt.Println(text)
 	default:
 		fmt.Println("command not found")
