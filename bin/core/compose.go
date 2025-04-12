@@ -10,6 +10,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/PavelMilanov/forge/config"
 	"github.com/compose-spec/compose-go/v2/loader"
 	"github.com/compose-spec/compose-go/v2/types"
 	"github.com/sirupsen/logrus"
@@ -26,7 +27,8 @@ type Compose struct {
 func NewCompose(file string) (*Compose, error) {
 	path, err := filepath.Abs(file)
 	if err != nil {
-		return nil, fmt.Errorf("error getting absolute path: %w", err)
+		logrus.Errorln(err)
+		return nil, err
 	}
 	project, err := loader.LoadWithContext(context.Background(), types.ConfigDetails{
 		ConfigFiles: []types.ConfigFile{{
@@ -39,6 +41,7 @@ func NewCompose(file string) (*Compose, error) {
 			}
 		})
 	if err != nil {
+		logrus.Errorln(err)
 		return nil, fmt.Errorf("error loading project: %w", err)
 	}
 	return &Compose{
@@ -48,15 +51,7 @@ func NewCompose(file string) (*Compose, error) {
 	}, nil
 }
 
-func (c *Compose) Deploy() error {
-	//  вычислить образа
-	// вычислить запущенные контейнеры
-	// привести в соответсвие
-	// проверить соостояние
-	// 1. если нет запущенных контейнеров проекта - запустить
-	// 2. если есть запущенные контейнеры проекта - проверить актуальность
-	// 3. обновить
-	// 4. проверить
+func (c *Compose) Deploy(config *config.Env) error {
 	docker, err := NewDocker()
 	if err != nil {
 		return fmt.Errorf("error %w", err)

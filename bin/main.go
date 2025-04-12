@@ -4,7 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"os"
+	"path/filepath"
 	"runtime"
 
 	"github.com/PavelMilanov/forge/config"
@@ -12,24 +14,23 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var log = logrus.New()
-
-func init() {
-	log.SetLevel(logrus.TraceLevel)
-	log.SetReportCaller(true)
-	log.SetFormatter(&logrus.TextFormatter{
+func main() {
+	logFile, err := os.OpenFile(filepath.Join(config.LOG_PATH, "forge.log"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		panic(err)
+	}
+	defer logFile.Close()
+	mw := io.MultiWriter(os.Stdout, logFile)
+	logrus.SetOutput(mw)
+	logrus.SetLevel(logrus.TraceLevel)
+	logrus.SetReportCaller(true)
+	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp:   true,
 		TimestampFormat: "2006/01/02 15:04:00",
 	})
-}
 
-func main() {
-	log.Out = os.Stdout
-	file, err := os.OpenFile("forge.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err == nil {
-		log.Out = file
-	}
-	defer file.Close()
+	env := config.NewEnv(config.CONFIG_PATH, "forge.yaml")
+
 	switch os.Args[1] {
 	case "deploy":
 		deploy := flag.NewFlagSet("deploy", flag.ExitOnError)
@@ -40,7 +41,7 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		if err := compose.Deploy(); err != nil {
+		if err := compose.Deploy(env); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
