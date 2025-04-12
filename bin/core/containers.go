@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
-	"io"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
+	"github.com/sirupsen/logrus"
 )
 
 // Модель для взаимодействия с сущноснями Docker.
@@ -52,8 +51,16 @@ func GetContainer(client *client.Client, id string) (*container.ContainerJSONBas
 	return container.ContainerJSONBase, nil
 }
 
+func (d *Docker) DeleteContainer(id string) error {
+	if err := d.Client.ContainerRemove(context.Background(), id, container.RemoveOptions{Force: true, RemoveVolumes: true}); err != nil {
+		logrus.Error(err)
+		return err
+	}
+	return nil
+}
+
 // PullImage скачивает образ из публичного/частного репозитория.
-// Если не заданы логин и пароль(2 и 3 параметром) - скачивается публичный образ.
+// Если не заданы логин и пароль (2 и 3 параметром) - скачивается публичный образ.
 func (d *Docker) PullImage(name string, a ...string) error {
 	var auth string
 	options := image.PullOptions{}
@@ -65,28 +72,10 @@ func (d *Docker) PullImage(name string, a ...string) error {
 	}
 	reader, err := d.Client.ImagePull(context.Background(), name, options)
 	if err != nil {
+		logrus.Error(err)
 		return fmt.Errorf("error: %w", err)
 	}
 	defer reader.Close()
-	dec := json.NewDecoder(reader)
-	for {
-		var status map[string]interface{}
-		if err := dec.Decode(&status); err == io.EOF {
-			break
-		} else if err != nil {
-			return fmt.Errorf("error: %w", err)
-		}
-		if id, ok := status["id"]; ok {
-			fmt.Printf("%s: ", id)
-		}
-		if s, ok := status["status"]; ok {
-			fmt.Printf("%s", s)
-		}
-		if progress, ok := status["progress"]; ok {
-			fmt.Printf(" %s", progress)
-		}
-	}
-	fmt.Println(fmt.Sprintf("Образ %s загружен!", name))
 	return nil
 }
 

@@ -1,3 +1,4 @@
 forge
 tmp
 .DS_Store
+*.log

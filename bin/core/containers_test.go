@@ -1,7 +1,9 @@
 package core
 
 import (
+	"fmt"
 	"testing"
+	"time"
 )
 
 func TestGetProjectContainers(t *testing.T) {
@@ -20,36 +22,12 @@ func TestPullImage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := docker.PullImage("nginx"); err != nil {
-		t.Fatal(err)
+	images := []string{"nginx", "alpine"}
+	start := time.Now()
+	for _, image := range images {
+		if err := docker.PullImage(image); err != nil {
+			t.Fatal(err)
+		}
 	}
+	fmt.Println(time.Since(start))
 }
-
-// func TestGetLogsContainer(t *testing.T) {
-// 	logs, err := GetLogsContainer(cli, "de300c34002ac8cf26238e6d13599bf04d230ca98cf515e2b07f53a2cd72d7b7")
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	t.Logf("%+v", string(logs))
-// }
-
-// func TestRestartContainer(t *testing.T) {
-// 	err := RestartContainer(cli, "de300c34002ac8cf26238e6d13599bf04d230ca98cf515e2b07f53a2cd72d7b7")
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// }
-
-// func TestStopContainer(t *testing.T) {
-// 	err := StopContainer(cli, "de300c34002ac8cf26238e6d13599bf04d230ca98cf515e2b07f53a2cd72d7b7")
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// }
-
-// func TestStartContainer(t *testing.T) {
-// 	err := StartContainer(cli, "de300c34002ac8cf26238e6d13599bf04d230ca98cf515e2b07f53a2cd72d7b7")
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// }
