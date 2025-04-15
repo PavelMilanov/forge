@@ -2,5 +2,4 @@
 package docker
 
 type Docker struct {
-	client *docker.Client
 }
