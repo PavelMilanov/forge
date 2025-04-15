@@ -8,8 +8,15 @@ import (
 
 // Env описывает конфигурацию приложения.
 type Env struct {
-	Vault    vault
-	Registry registry
+	Portainer portainer
+	Vault     vault
+	Registry  registry
+}
+
+type portainer struct {
+	Url      string `mapstructure:"url"`
+	Login    string `mapstructure:"login"`
+	Password string `mapstructure:"password"`
 }
 
 // server описывает конфигурацию сервера.
@@ -20,7 +27,7 @@ type vault struct {
 	Mount string `mapstructure:"mount"`
 }
 
-// storage описывает конфигурацию хранилища.
+// registry описывает конфигурацию хранилища.
 type registry struct {
 	Url      string `mapstructure:"url"`
 	Login    string `mapstructure:"login"`

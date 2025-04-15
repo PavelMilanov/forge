@@ -1,9 +1,0 @@
-services:
-  nginx:
-    image: nginx:latest
-    container_name: nginx
-    restart: always
-
-  redis:
-    image: redis:latest
-    restart: always
