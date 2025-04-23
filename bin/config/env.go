@@ -8,15 +8,8 @@ import (
 
 // Env описывает конфигурацию приложения.
 type Env struct {
-	Portainer portainer
 	Vault     vault
 	Registry  registry
-}
-
-type portainer struct {
-	Url      string `mapstructure:"url"`
-	Login    string `mapstructure:"login"`
-	Password string `mapstructure:"password"`
 }
 
 // server описывает конфигурацию сервера.
