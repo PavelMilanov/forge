@@ -14,7 +14,7 @@ func GenerateAppConfig(path string, tags map[string]string) error {
 			if t, ok := tags[svc]; ok {
 				return t
 			}
-			return "undefained"
+			return "undefined"
 		},
 	}
 
