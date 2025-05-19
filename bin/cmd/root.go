@@ -1,15 +1,21 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"os"
 
+	"github.com/PavelMilanov/forge/docker"
+	"github.com/PavelMilanov/forge/utils"
+	"github.com/hashicorp/vault/api"
 	"github.com/spf13/cobra"
 )
 
-var dockerFile string
+var (
+	project       *docker.Stack
+	dockerFile    string
+	dockerService string
+	dockerEnv     string
+	vault         *api.KVv2
+)
 
 var rootCmd = &cobra.Command{
 	Use:   "forge",
@@ -20,13 +26,10 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -36,4 +39,9 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&dockerFile, "file", "f", "", "forge -f <docker-compose.yml|docker-stack.yml>")
+	rootCmd.PersistentFlags().StringVarP(&dockerEnv, "env", "e", "default", "forge -e <env_name>")
+	rootCmd.MarkPersistentFlagRequired("file")
+
+	client := utils.NewVault()
+	vault = client
 }

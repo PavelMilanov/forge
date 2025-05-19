@@ -2,28 +2,36 @@
 package utils
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 	"text/template"
 )
 
-func GenerateAppConfig() {
-	tmpl, err := template.ParseFiles("template.yml")
-	if err != nil {
-		panic(err)
+func GenerateAppConfig(path string, tags map[string]string) error {
+	funcMap := template.FuncMap{
+		"tag": func(svc string) string {
+			if t, ok := tags[svc]; ok {
+				return t
+			}
+			return "latest"
+		},
 	}
-	output, err := os.Create("docker-compose.yaml")
+
+	tmpl, err := template.New(filepath.Base(path)).
+		Funcs(funcMap).
+		ParseFiles(path)
 	if err != nil {
-		panic(err)
+		return err
+	}
+
+	output, err := os.Create("docker-compose.yml")
+	if err != nil {
+		return err
 	}
 	defer output.Close()
-
-	data := struct {
-		Tag string
-	}{
-		Tag: "3.14",
+	if err := tmpl.ExecuteTemplate(output, filepath.Base(path), nil); err != nil {
+		return fmt.Errorf("failed to execute template: %w", err)
 	}
-	err = tmpl.Execute(output, data)
-	if err != nil {
-		panic(err)
-	}
+	return nil
 }

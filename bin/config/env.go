@@ -8,8 +8,8 @@ import (
 
 // Env описывает конфигурацию приложения.
 type Env struct {
-	Vault     vault
-	Registry  registry
+	Vault    vault
+	Registry registry
 }
 
 // server описывает конфигурацию сервера.
@@ -17,7 +17,6 @@ type vault struct {
 	Url   string `mapstructure:"url"`
 	Token string `mapstructure:"token"`
 	Path  string `mapstructure:"path"`
-	Mount string `mapstructure:"mount"`
 }
 
 // registry описывает конфигурацию хранилища.
@@ -30,7 +29,7 @@ type registry struct {
 func NewEnv(path, file string) *Env {
 	env := Env{}
 	viper.SetConfigName(file) // имя файла без расширения
-	viper.SetConfigType("yaml")
+	viper.SetConfigType("yml")
 	viper.AddConfigPath(path)
 
 	err := viper.ReadInConfig()

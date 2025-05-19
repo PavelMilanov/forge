@@ -7,16 +7,18 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/PavelMilanov/forge/config"
 	"github.com/compose-spec/compose-go/v2/loader"
 	"github.com/compose-spec/compose-go/v2/types"
 )
 
-type Compose struct {
-	App *types.Project
-	Dir string
+type Stack struct {
+	App  *types.Project
+	Dir  string
+	Mode int
 }
 
-func NewCompose(file string) (*Compose, error) {
+func NewStack(file string) (*Stack, error) {
 	dirs := strings.Split(filepath.Dir(file), "/")
 	projectName := dirs[len(dirs)-1]
 
@@ -33,9 +35,17 @@ func NewCompose(file string) (*Compose, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error loading project: %w", err)
 	}
-	return &Compose{
-		App: project,
-		Dir: filepath.Dir(file)}, nil
+	var stack Stack
+	stack.App = project
+	stack.Dir = filepath.Dir(file)
+	for _, service := range project.Services {
+		if service.Deploy == nil {
+			stack.Mode = config.DOCKERMOD["compose"]
+		} else {
+			stack.Mode = config.DOCKERMOD["stack"]
+		}
+	}
+	return &stack, nil
 }
 
 // func (d *Docker) command(command string, a ...string) error {

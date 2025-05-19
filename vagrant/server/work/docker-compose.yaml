@@ -8,4 +8,4 @@ services:
     environment:
       - VAULT_DEV_ROOT_TOKEN_ID=root
     ports:
-      - "8200:8200"
+      - "8080:8200"
