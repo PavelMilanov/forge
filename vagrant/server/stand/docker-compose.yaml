@@ -1,0 +1,5 @@
+services:
+  alpine:
+    image: alpine:{{ tag "alpine" }}
+    container_name: alpine
+    restart: unless-stopped

@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
+
+	"github.com/PavelMilanov/forge/config"
 )
 
 func GenerateAppConfig(path string, tags map[string]string) error {
@@ -25,7 +27,7 @@ func GenerateAppConfig(path string, tags map[string]string) error {
 		return err
 	}
 
-	output, err := os.Create("docker-compose.yml")
+	output, err := os.Create(filepath.Join(config.CONFIG_PATH, "docker-compose.yml"))
 	if err != nil {
 		return err
 	}

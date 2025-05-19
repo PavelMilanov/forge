@@ -9,3 +9,19 @@ services:
       - VAULT_DEV_ROOT_TOKEN_ID=root
     ports:
       - "8080:8200"
+    volumes:
+      - vault-data:/vault/file
+
+  registry:
+    image: rosomilanov/container-registry:latest
+    container_name: registry
+    restart: unless-stopped
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./registry-conf:/registry/conf.d:ro
+      - registry-data:/registry/var
+
+volumes:
+  vault-data:
+  registry-data:

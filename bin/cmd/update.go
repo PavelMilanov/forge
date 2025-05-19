@@ -13,10 +13,18 @@ import (
 
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "Обновление сервиса до указанной версии",
-	Long: `Обновление сервиса до указанной версии и генерация конфигурационного файла docker. Пример:
+	Short: "Updating the service to the specified version",
+	Long: `Updating the service to the specified version and generating the docker configuration file.
+For example:
+forge -f docker-compose.yml -s alpine update 3.21
 
-forge -f docker-compose.yml -s alpine update 1.0.0`,
+<docker-compose.yml>
+services:
+  alpine:
+    image: alpine:latest
+    container_name: alpine
+    restart: unless-stopped
+`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()

@@ -1,0 +1,10 @@
+services:
+  app:
+    image: myimage/backend:{{ tag "myimage" }}
+    container_name: alpine
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped

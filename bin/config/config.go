@@ -1,8 +1,7 @@
 package config
 
 var (
-	DURATION    = 2
-	VERSION     = "v0.1.0"
+	VERSION     = "dev"
 	CONFIG_PATH = "var/config/"
 	VAULT_PATH  = "forge"
 )

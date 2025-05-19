@@ -5,24 +5,33 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/PavelMilanov/forge/config"
 	"github.com/PavelMilanov/forge/utils"
 	"github.com/spf13/cobra"
 )
 
 var deployCmd = &cobra.Command{
 	Use:   "deploy",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Generating a project configuration file",
+	Long: `Generate a project configuration file based on monitored service versions.
+For example:
+forge -f docker/test/docker-compose.test2.yaml deploy backend
+<docker-compose.template.yml>
+services:
+  alpine:
+    image: alpine:{{ tag "alpine" }}
+    container_name: alpine
+    restart: unless-stopped
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Args: cobra.ExactArgs(1),
+<docker-compose.yml>
+services:
+  alpine:
+    image: alpine:latest
+    container_name: alpine
+    restart: unless-stopped
+`, Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		secrets, err := vault.Get(ctx, config.VAULT_PATH)
+		secrets, err := vault.Get(ctx, args[0])
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

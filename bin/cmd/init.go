@@ -5,32 +5,31 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/PavelMilanov/forge/config"
 	"github.com/PavelMilanov/forge/docker"
 	"github.com/spf13/cobra"
 )
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Project initialization",
+	Long: `Set of versions of monitored services in a docker-compose file.
+For example:
+forge -f docker/test/docker-compose.yaml init backend
+`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		stack, _ := docker.NewStack(dockerFile)
 		data := map[string]interface{}{}
 		for _, service := range stack.App.Services {
-			data[stack.App.Name+"_"+service.Name] = "latest"
+			data[service.Name] = "undefined"
 		}
-		_, err := vault.Put(ctx, config.VAULT_PATH, data)
+		_, err := vault.Put(ctx, args[0], data)
 		if err != nil {
 			os.Exit(1)
 		}
-		fmt.Println("Проект инициализирован успешно")
+		text := fmt.Sprintf("The project %s initialization was successful.", args[0])
+		fmt.Println(text)
 	},
 }
 
