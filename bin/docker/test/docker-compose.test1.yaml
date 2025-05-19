@@ -1,0 +1,15 @@
+services:
+  alpine:
+    image: alpine:{{ tag "alpine" }}
+    container_name: alpine
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:{{ tag "nginx" }}
+    container_name: nginx
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:{{ tag "postgres" }}
+    container_name: postgres
+    restart: unless-stopped
