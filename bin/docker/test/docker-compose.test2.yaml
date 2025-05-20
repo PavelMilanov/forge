@@ -1,6 +1,6 @@
 services:
   app:
-    image: myimage/backend:{{ tag "myimage" }}
+    image: myimage/backend:{{ tag "app" }}
     container_name: alpine
     restart: unless-stopped
 

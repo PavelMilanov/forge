@@ -10,7 +10,7 @@ import (
 	"github.com/PavelMilanov/forge/config"
 )
 
-func GenerateAppConfig(path string, tags map[string]string) error {
+func GenerateAppConfig(path, name string, tags map[string]string) error {
 	funcMap := template.FuncMap{
 		"tag": func(svc string) string {
 			if t, ok := tags[svc]; ok {
@@ -26,8 +26,8 @@ func GenerateAppConfig(path string, tags map[string]string) error {
 	if err != nil {
 		return err
 	}
-
-	output, err := os.Create(filepath.Join(config.CONFIG_PATH, "docker-compose.yml"))
+	fileName := fmt.Sprintf("%s-stack.yml", name)
+	output, err := os.Create(filepath.Join(config.CONFIG_PATH, fileName))
 	if err != nil {
 		return err
 	}

@@ -22,7 +22,7 @@ services:
     container_name: alpine
     restart: unless-stopped
 
-<docker-compose.yml>
+<backend-stack.yml>
 services:
   alpine:
     image: alpine:latest
@@ -40,10 +40,11 @@ services:
 		for key, value := range secrets.Data {
 			tags[key] = value.(string)
 		}
-		if err := utils.GenerateAppConfig(dockerFile, tags); err != nil {
-			fmt.Println("Ошибка генерации конфигурационного файла:", err)
+		if err := utils.GenerateAppConfig(dockerFile, args[0], tags); err != nil {
+			fmt.Println("Error generating config:", err)
 			os.Exit(1)
 		}
+		fmt.Println("Project deploed")
 	},
 }
 

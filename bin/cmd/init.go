@@ -19,17 +19,28 @@ forge -f docker/test/docker-compose.yaml init backend
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		stack, _ := docker.NewStack(dockerFile)
+		stack, err := docker.NewStack(dockerFile)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 		data := map[string]interface{}{}
 		for _, service := range stack.App.Services {
 			data[service.Name] = "undefined"
 		}
-		_, err := vault.Put(ctx, args[0], data)
+
+		_, err = vault.Get(ctx, args[0])
 		if err != nil {
-			os.Exit(1)
+			_, err = vault.Put(ctx, args[0], data)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			text := fmt.Sprintf("The project %s initialization was successful.", args[0])
+			fmt.Println(text)
+			os.Exit(0)
 		}
-		text := fmt.Sprintf("The project %s initialization was successful.", args[0])
-		fmt.Println(text)
+		fmt.Println("The project already initialized.")
 	},
 }
 
