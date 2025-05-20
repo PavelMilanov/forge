@@ -8,7 +8,8 @@ func TestGenerateAppConfig(t *testing.T) {
 		"nginx":    "test",
 		"postgres": "test",
 	}
-	if err := GenerateAppConfig("../docker/test/docker-compose.test1.yaml", "test", tags); err != nil {
+	_, err := GenerateAppConfig("../docker/test/docker-compose.test1.yaml", "test", tags)
+	if err != nil {
 		t.Error(err)
 	}
 }

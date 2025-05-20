@@ -5,7 +5,6 @@ import (
 
 	"github.com/PavelMilanov/forge/docker"
 	"github.com/PavelMilanov/forge/utils"
-	"github.com/hashicorp/vault/api"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +13,7 @@ var (
 	dockerFile    string
 	dockerService string
 	dockerEnv     string
-	vault         *api.KVv2
+	vault         *utils.VaultClient
 )
 
 var rootCmd = &cobra.Command{
@@ -34,10 +33,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&dockerFile, "file", "f", "", "forge -f <docker-compose.yml|docker-stack.yml>")
-	rootCmd.PersistentFlags().StringVarP(&dockerEnv, "env", "e", "default", "forge -e <env_name>")
-	rootCmd.MarkPersistentFlagRequired("file")
-
-	client := utils.NewVault()
-	vault = client
+	vault = utils.NewVaultClient()
 }

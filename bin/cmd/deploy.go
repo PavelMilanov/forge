@@ -21,7 +21,6 @@ services:
     image: alpine:{{ tag "alpine" }}
     container_name: alpine
     restart: unless-stopped
-
 <backend-stack.yml>
 services:
   alpine:
@@ -31,7 +30,7 @@ services:
 `, Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		secrets, err := vault.Get(ctx, args[0])
+		secrets, err := vault.KV.Get(ctx, args[0])
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -40,14 +39,18 @@ services:
 		for key, value := range secrets.Data {
 			tags[key] = value.(string)
 		}
-		if err := utils.GenerateAppConfig(dockerFile, args[0], tags); err != nil {
+		file, err := utils.GenerateAppConfig(dockerFile, args[0], tags)
+		if err != nil {
 			fmt.Println("Error generating config:", err)
 			os.Exit(1)
 		}
-		fmt.Println("Project deploed")
+		text := fmt.Sprintf("Project file generated.\nSee %s", file)
+		fmt.Println(text)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(deployCmd)
+	deployCmd.PersistentFlags().StringVarP(&dockerFile, "file", "f", "", "forge -f <docker-compose.yml|docker-stack.yml>")
+	deployCmd.MarkPersistentFlagRequired("file")
 }

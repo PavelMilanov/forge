@@ -29,14 +29,14 @@ forge -f docker/test/docker-compose.yaml init backend
 			data[service.Name] = "undefined"
 		}
 
-		_, err = vault.Get(ctx, args[0])
+		_, err = vault.KV.Get(ctx, args[0])
 		if err != nil {
-			_, err = vault.Put(ctx, args[0], data)
+			_, err = vault.KV.Put(ctx, args[0], data)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			text := fmt.Sprintf("The project %s initialization was successful.", args[0])
+			text := fmt.Sprintf("The project %s initialization was successful.\nSee %s", args[0], vault.ENV.Vault.Url)
 			fmt.Println(text)
 			os.Exit(0)
 		}
@@ -46,4 +46,6 @@ forge -f docker/test/docker-compose.yaml init backend
 
 func init() {
 	rootCmd.AddCommand(initCmd)
+	initCmd.PersistentFlags().StringVarP(&dockerFile, "file", "f", "", "forge -f <docker-compose.yml|docker-stack.yml>")
+	initCmd.MarkPersistentFlagRequired("file")
 }
