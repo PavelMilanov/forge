@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/PavelMilanov/forge/docker"
 	"github.com/spf13/cobra"
@@ -26,7 +27,7 @@ forge -f docker/test/docker-compose.yaml init backend
 		}
 		data := map[string]interface{}{}
 		for _, service := range stack.App.Services {
-			data[service.Name] = "undefined"
+			data[service.Name] = strings.Split(service.Image, ":")[1]
 		}
 
 		_, err = vault.KV.Get(ctx, args[0])

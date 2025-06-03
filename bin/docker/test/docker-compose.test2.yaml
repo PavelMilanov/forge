@@ -1,7 +1,12 @@
 services:
   app:
     image: myimage/backend:{{ tag "app" }}
-    container_name: alpine
+    container_name: app
+    restart: unless-stopped
+
+  app2:
+    image: myimage/frontend:{{ tag "app" }}
+    container_name: app2
     restart: unless-stopped
 
   redis:

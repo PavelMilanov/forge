@@ -46,8 +46,9 @@ services:
 			fmt.Println("Error generating config:", err)
 			os.Exit(1)
 		}
-		text := fmt.Sprintf("Project file updated.\nSee %s", file)
+		text := fmt.Sprintf("Project file %s updated.", file)
 		fmt.Println(text)
+		// 1. команда docker --context=default compose -f <file> up -d <service> --force-recreate
 	},
 }
 
@@ -55,6 +56,7 @@ func init() {
 	rootCmd.AddCommand(updateCmd)
 	updateCmd.PersistentFlags().StringVarP(&dockerFile, "file", "f", "", "forge -f <docker-compose.yml|docker-stack.yml>")
 	updateCmd.PersistentFlags().StringVarP(&dockerService, "service", "s", "", "forge -s <service_name>")
+	updateCmd.PersistentFlags().StringVarP(&dockerEnv, "env", "e", "default", "forge -e <env_name>")
 	updateCmd.MarkPersistentFlagRequired("file")
 	updateCmd.MarkPersistentFlagRequired("service")
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/PavelMilanov/forge/docker"
 	"github.com/PavelMilanov/forge/utils"
 	"github.com/spf13/cobra"
 )
@@ -44,13 +45,18 @@ services:
 			fmt.Println("Error generating config:", err)
 			os.Exit(1)
 		}
-		text := fmt.Sprintf("Project file generated.\nSee %s", file)
+		text := fmt.Sprintf("Project file %s generated.", file)
 		fmt.Println(text)
+		if err := docker.DockerCommand("up", dockerEnv, file); err != nil {
+			fmt.Println("Error starting containers:", err)
+			os.Exit(1)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(deployCmd)
 	deployCmd.PersistentFlags().StringVarP(&dockerFile, "file", "f", "", "forge -f <docker-compose.yml|docker-stack.yml>")
+	deployCmd.PersistentFlags().StringVarP(&dockerEnv, "env", "e", "default", "forge -e <env_name>")
 	deployCmd.MarkPersistentFlagRequired("file")
 }

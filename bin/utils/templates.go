@@ -26,8 +26,8 @@ func GenerateAppConfig(path, name string, tags map[string]string) (string, error
 	if err != nil {
 		return "", err
 	}
-	fileName := fmt.Sprintf("%s-stack.yml", name)
-	output, err := os.Create(filepath.Join(config.CONFIG_PATH, fileName))
+	fileName := fmt.Sprintf("%s-stack.yml", filepath.Join(config.CONFIG_PATH, name))
+	output, err := os.Create(fileName)
 	if err != nil {
 		return "", err
 	}
