@@ -20,7 +20,7 @@ forge -f docker/test/docker-compose.yaml init backend
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		stack, err := docker.NewStack(dockerFile)
+		stack, err := docker.NewStack(dockerFile, args[0])
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/PavelMilanov/forge/config"
@@ -20,9 +19,10 @@ type Stack struct {
 	Mode int
 }
 
-func NewStack(file string) (*Stack, error) {
-	dirs := strings.Split(filepath.Dir(file), "/")
-	projectName := dirs[len(dirs)-1]
+func NewStack(file, projectName string) (*Stack, error) {
+	// dirs := strings.Split(filepath.Dir(file), "/")
+	// fmt.Println(dirs)
+	// projectName := dirs[len(dirs)-1]
 
 	project, err := loader.LoadWithContext(context.Background(), types.ConfigDetails{
 		ConfigFiles: []types.ConfigFile{{

@@ -12,14 +12,14 @@ func TestNewStack(t *testing.T) {
 		if err != nil {
 			t.Errorf("error: %v", err)
 		}
-		c, err := NewStack(filepath.Join(curr, "./test/docker-compose.test1.yaml"))
+		c, err := NewStack(filepath.Join(curr, "./test/docker-compose.test1.yaml"), "test")
 		if err != nil {
 			t.Errorf("error: %v", err)
 		}
 		t.Log(c)
 	})
 	t.Run("relative path", func(t *testing.T) {
-		c, err := NewStack("test/docker-compose.test1.yaml")
+		c, err := NewStack("test/docker-compose.test1.yaml", "test")
 		if err != nil {
 			t.Errorf("error: %v", err)
 		}
