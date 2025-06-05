@@ -14,6 +14,7 @@ var updateCmd = &cobra.Command{
 	Short: "Updating the service to the specified version",
 	Long: `Updating the service to the specified version and generating the docker configuration file.
 For example:
+
 forge -f docker-compose.yml -s alpine update 3.21 backend
 <backend-stack.yml>
 services:
