@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/PavelMilanov/forge/docker"
 	"github.com/PavelMilanov/forge/utils"
 	"github.com/spf13/cobra"
 )
@@ -47,10 +46,10 @@ services:
 		}
 		text := fmt.Sprintf("Project file %s generated.", file)
 		fmt.Println(text)
-		if err := docker.DockerCommand("up", dockerEnv, file); err != nil {
-			fmt.Println("Error starting containers:", err)
-			os.Exit(1)
-		}
+		// if err := docker.DockerCommand("up", dockerEnv, file); err != nil {
+		// 	fmt.Println("Error starting containers:", err)
+		// 	os.Exit(1)
+		// }
 	},
 }
 
