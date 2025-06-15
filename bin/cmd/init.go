@@ -36,11 +36,11 @@ forge init -f docker/test/docker-compose.yaml -a backend
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			text := fmt.Sprintf("The project %s initialization was successful.\nSee %s", dockerAlias, vault.ENV.Vault.Url)
+			text := fmt.Sprintf("The project %s initialization was successful\nSee %s", dockerAlias, vault.ENV.Vault.Url)
 			fmt.Println(text)
 			os.Exit(0)
 		}
-		fmt.Println("The project already initialized.")
+		fmt.Println("The project already initialized")
 	},
 }
 

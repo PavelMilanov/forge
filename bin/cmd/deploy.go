@@ -45,8 +45,9 @@ services:
 			fmt.Println("Error generating config:", err)
 			os.Exit(1)
 		}
-		text := fmt.Sprintf("Project file %s generated.", file)
+		text := fmt.Sprintf("Project file %s generated", file)
 		fmt.Println(text)
+		os.Exit(0)
 	},
 }
 
