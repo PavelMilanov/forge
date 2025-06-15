@@ -1,5 +1,0 @@
-services:
-  nginx:
-    image: nginx:{{ tag "nginx" }}
-    container_name: nginx
-    restart: unless-stopped

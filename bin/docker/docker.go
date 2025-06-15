@@ -23,7 +23,6 @@ func NewStack(file, projectName string) (*Stack, error) {
 	// dirs := strings.Split(filepath.Dir(file), "/")
 	// fmt.Println(dirs)
 	// projectName := dirs[len(dirs)-1]
-
 	project, err := loader.LoadWithContext(context.Background(), types.ConfigDetails{
 		ConfigFiles: []types.ConfigFile{{
 			Filename: file,
