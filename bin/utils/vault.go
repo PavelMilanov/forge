@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/PavelMilanov/forge/config"
 	"github.com/hashicorp/vault/api"
@@ -21,6 +22,13 @@ func NewVaultClient() *VaultClient {
 		fmt.Println(err)
 	}
 	client.SetToken(env.Vault.Token)
+	// token := client.Auth().Token()
+	// fmt.Println(x.LookupSelf())
+	_, err = client.Auth().Token().RenewSelf(768)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	kv := client.KVv2(env.Vault.Path)
 	return &VaultClient{
 		ENV: env,
