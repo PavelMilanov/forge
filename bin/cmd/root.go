@@ -3,9 +3,9 @@ package cmd
 import (
 	"os"
 
+	"github.com/PavelMilanov/forge/config"
 	"github.com/PavelMilanov/forge/docker"
 	"github.com/PavelMilanov/forge/utils"
-	"github.com/hashicorp/vault/api"
 	"github.com/spf13/cobra"
 )
 
@@ -13,15 +13,14 @@ var (
 	project       *docker.Stack
 	dockerFile    string
 	dockerService string
-	dockerEnv     string
-	vault         *api.KVv2
+	dockerAlias   string
+	vault         *utils.VaultClient
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "forge",
-	Short: "cli-utility for managing ci/cd integration with docker infrastructure",
-	Long: `cli utility for managing ci/cd integration with docker infrastructure.
-`,
+	Use:     "forge",
+	Short:   "cli-utility for managing ci/cd integration with docker infrastructure",
+	Version: config.VERSION,
 	Run: func(cmd *cobra.Command, args []string) {
 	},
 }
@@ -34,10 +33,19 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&dockerFile, "file", "f", "", "forge -f <docker-compose.yml|docker-stack.yml>")
-	rootCmd.PersistentFlags().StringVarP(&dockerEnv, "env", "e", "default", "forge -e <env_name>")
-	rootCmd.MarkPersistentFlagRequired("file")
+	vault = utils.NewVaultClient()
+}
 
-	client := utils.NewVault()
-	vault = client
+func addDefaultFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&dockerFile, "file", "f", "", "path to dockerProject.yml")
+	cmd.Flags().StringVarP(&dockerAlias, "alias", "a", "", "unique project name")
+	cmd.MarkFlagRequired("file")
+	cmd.MarkFlagRequired("alias")
+}
+
+func addAliasFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&dockerAlias, "alias", "a", "", "project name")
+	cmd.Flags().StringVarP(&dockerService, "service", "s", "", "service of project")
+	cmd.MarkFlagRequired("alias")
+	cmd.MarkFlagRequired("service")
 }

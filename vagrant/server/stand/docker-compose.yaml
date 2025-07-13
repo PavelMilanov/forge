@@ -1,5 +1,9 @@
 services:
-  alpine:
-    image: alpine:{{ tag "alpine" }}
-    container_name: alpine
+  nginx:
+    image: nginx:{{ tag "alpine" }}
+    container_name: nginx
     restart: unless-stopped
+    env_file:
+      - /home/vagrant/.env
+    volumes:
+      - /home/vagrant/dir:/dir

@@ -12,26 +12,26 @@ import (
 var deployCmd = &cobra.Command{
 	Use:   "deploy",
 	Short: "Generating a project configuration file",
-	Long: `Generate a project configuration file based on monitored service versions.
-For example:
-forge -f docker/test/docker-compose.test2.yaml deploy backend
-<docker-compose.template.yml>
+	Example: `
+forge deploy -f test.docker-compose.yml -a stage
+<test.docker-compose.yml>
 services:
   alpine:
     image: alpine:{{ tag "alpine" }}
     container_name: alpine
     restart: unless-stopped
 
-<docker-compose.yml>
+<stage-stack.yml>
 services:
   alpine:
     image: alpine:latest
     container_name: alpine
     restart: unless-stopped
-`, Args: cobra.ExactArgs(1),
+`,
+	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		secrets, err := vault.Get(ctx, args[0])
+		secrets, err := vault.KV.Get(ctx, dockerAlias)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -40,13 +40,18 @@ services:
 		for key, value := range secrets.Data {
 			tags[key] = value.(string)
 		}
-		if err := utils.GenerateAppConfig(dockerFile, tags); err != nil {
-			fmt.Println("Ошибка генерации конфигурационного файла:", err)
+		file, err := utils.GenerateAppConfig(dockerFile, dockerAlias, tags)
+		if err != nil {
+			fmt.Println("Error generating config:", err)
 			os.Exit(1)
 		}
+		text := fmt.Sprintf("Project file %s generated", file)
+		fmt.Println(text)
+		os.Exit(0)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(deployCmd)
+	addDefaultFlags(deployCmd)
 }
