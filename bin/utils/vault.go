@@ -22,13 +22,17 @@ func NewVaultClient() *VaultClient {
 		fmt.Println(err)
 	}
 	client.SetToken(env.Vault.Token)
-	// token := client.Auth().Token()
-	// fmt.Println(x.LookupSelf())
-	_, err = client.Auth().Token().RenewSelf(768)
+	_, err = client.Auth().Token().LookupSelf()
+	if err != nil {
+		fmt.Printf("Failed to lookup token: %v\n", err)
+		os.Exit(1)
+	}
+	_, err = client.Auth().Token().RenewSelf(2764800)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
 	kv := client.KVv2(env.Vault.Path)
 	return &VaultClient{
 		ENV: env,
