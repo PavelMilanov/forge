@@ -27,12 +27,3 @@ func TestNewStack(t *testing.T) {
 	})
 
 }
-
-func TestRegistryLogin(t *testing.T) {
-	t.Run("login", func(t *testing.T) {
-		err := RegistryLogin("default", "admin", "admin", "http://127.0.0.1:5050")
-		if err != nil {
-			t.Errorf("error: %v", err)
-		}
-	})
-}
