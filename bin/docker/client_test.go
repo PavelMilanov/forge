@@ -12,6 +12,7 @@ func TestRegistryLogin(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error getting Docker client: %v", err)
 	}
+	defer client.Close()
 	cred := registry.AuthConfig{
 		Username:      "admin",
 		Password:      "admin",

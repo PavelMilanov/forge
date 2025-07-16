@@ -13,6 +13,10 @@ type VaultClient struct {
 	KV  *api.KVv2
 }
 
+/*
+ * Initialize a new Vault client
+ *
+ */
 func NewVaultClient() *VaultClient {
 	env := config.NewEnv(config.CONFIG_PATH, "forge.yml")
 	config := api.DefaultConfig()
@@ -22,11 +26,6 @@ func NewVaultClient() *VaultClient {
 		fmt.Println(err)
 	}
 	client.SetToken(env.Vault.Token)
-	_, err = client.Auth().Token().LookupSelf()
-	if err != nil {
-		fmt.Printf("Failed to lookup token: %v\n", err)
-		os.Exit(1)
-	}
 	_, err = client.Auth().Token().RenewSelf(2764800)
 	if err != nil {
 		fmt.Println(err)

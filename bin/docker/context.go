@@ -1,34 +1,42 @@
 package docker
 
 import (
+	"errors"
+
 	"github.com/docker/docker/client"
 	dockerHost "github.com/docker/go-sdk/context"
 )
 
-func GetDockerClient() (*client.Client, error) {
-	// ctxName, err := dockerHost.Current()
-	host, err := dockerHost.CurrentDockerHost()
-	// host2, err := dockerCtx.DockerHostFromContext("my-context")
-	// list, err := dockerHost.List()
-	// info, err := dockerCtx.Inspect(ctxName)
-	if err != nil {
-		return nil, err
+func GetDockerClient(context ...string) (*client.Client, error) {
+	switch len(context) {
+	case 1:
+		ctxName := context[0]
+		host, err := dockerHost.DockerHostFromContext(ctxName)
+		if err != nil {
+			return nil, err
+		}
+		cli, err := client.NewClientWithOpts(
+			client.WithHost(host),
+			client.WithAPIVersionNegotiation(),
+		)
+		if err != nil {
+			return nil, err
+		}
+		return cli, nil
+	case 0:
+		host, err := dockerHost.CurrentDockerHost()
+		if err != nil {
+			return nil, err
+		}
+		cli, err := client.NewClientWithOpts(
+			client.WithHost(host),
+			client.WithAPIVersionNegotiation(),
+		)
+		if err != nil {
+			return nil, err
+		}
+		return cli, nil
+	default:
+		return nil, errors.New("docker context not found")
 	}
-	// fmt.Println(ctxName)
-	// fmt.Println(list, host)
-
-	cli, err := client.NewClientWithOpts(
-		client.WithHost(host),
-		client.WithAPIVersionNegotiation(),
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer cli.Close()
-	// ctrs, err := cli.ContainerList(context.Background(), container.ListOptions{})
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println("Контейнеры:", ctrs)
-	return cli, nil
 }
