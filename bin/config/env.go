@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/spf13/viper"
 )
 
@@ -26,7 +24,7 @@ type registry struct {
 	Password string `mapstructure:"password"`
 }
 
-func NewEnv(path, file string) *Env {
+func NewEnv(path, file string) (*Env, error) {
 	env := Env{}
 	viper.SetConfigName(file) // имя файла без расширения
 	viper.SetConfigType("yml")
@@ -34,12 +32,12 @@ func NewEnv(path, file string) *Env {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		fmt.Println("не найден файл конфигурации : ", err)
+		return nil, err
 	}
 
 	err = viper.Unmarshal(&env)
 	if err != nil {
-		fmt.Println("не загружен файл конфигурации: ", err)
+		return nil, err
 	}
-	return &env
+	return &env, nil
 }

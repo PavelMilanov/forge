@@ -24,3 +24,15 @@ func TestRegistryLogin(t *testing.T) {
 	}
 	t.Logf("Logged in to registry: %s", reg.Status)
 }
+
+func TestGetContainers(t *testing.T) {
+	client, err := GetDockerClient()
+	if err != nil {
+		t.Errorf("Error getting Docker client: %v", err)
+	}
+	data, err := GetContainers(client)
+	if err != nil {
+		t.Errorf("Error getting containers: %v", err)
+	}
+	t.Log(data)
+}

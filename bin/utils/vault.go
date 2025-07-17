@@ -18,12 +18,17 @@ type VaultClient struct {
  *
  */
 func NewVaultClient() *VaultClient {
-	env := config.NewEnv(config.CONFIG_PATH, "forge.yml")
+	env, err := config.NewEnv(config.CONFIG_PATH, "forge.yml")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	config := api.DefaultConfig()
 	config.Address = env.Vault.Url
 	client, err := api.NewClient(config)
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 	}
 	client.SetToken(env.Vault.Token)
 	_, err = client.Auth().Token().RenewSelf(2764800)
