@@ -1,0 +1,12 @@
+services:
+  alpine:
+    image: alpine:{{ .Tag }}
+    container_name: alpine
+    deployment:
+      replicas: {{ .Replicas }}
+
+  nginx:
+    image: nginx:{{ .Tag }}
+    container_name: nginx
+    deployment:
+      replicas: {{ .Replicas }}

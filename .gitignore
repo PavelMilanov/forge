@@ -3,3 +3,4 @@ forge
 .vagrant
 logs
 var
+go.sum
