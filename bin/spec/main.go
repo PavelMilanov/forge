@@ -2,6 +2,8 @@ package spec
 
 import (
 	"errors"
+
+	"github.com/PavelMilanov/forge/config"
 )
 
 type Spec interface {
@@ -10,13 +12,13 @@ type Spec interface {
 
 func NewSpec(mode string) (Spec, error) {
 	switch mode {
-	case "swarm":
+	case config.SPECMODE["swarm"]:
 		spec := Swarm{}
 		return &spec, nil
-	case "compose":
+	case config.SPECMODE["compose"]:
 		spec := Compose{}
 		return &spec, nil
-	case "kubernetes":
+	case config.SPECMODE["kubernetes"]:
 		spec := Kubernetes{}
 		return &spec, nil
 	default:
