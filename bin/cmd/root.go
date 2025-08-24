@@ -4,13 +4,12 @@ import (
 	"os"
 
 	"github.com/PavelMilanov/forge/config"
-	"github.com/PavelMilanov/forge/docker"
 	"github.com/PavelMilanov/forge/utils"
 	"github.com/spf13/cobra"
 )
 
 var (
-	project       *docker.Stack
+	// project       *docker.Stack
 	dockerFile    string
 	dockerService string
 	dockerAlias   string
