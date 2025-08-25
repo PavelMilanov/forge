@@ -12,10 +12,16 @@ import (
 Compose - абстракция над docker compose спецификацией в файлах конфигурации.
 */
 type Compose struct {
-	Tag string
+	Tag string `json:"tag"`
 }
 
-func (c *Compose) Init(path, alias string) error {
+func (c *Compose) Init() {
+	if c.Tag == "" {
+		c.Tag = "latest"
+	}
+}
+
+func (c *Compose) New(path, alias string) error {
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {
 		return err

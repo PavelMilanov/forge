@@ -21,12 +21,13 @@ forge set dev -s alpine 3.21
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		secrets, err := vault.KV.Get(ctx, args[1])
+		secrets, err := vault.KV.Get(ctx, args[0])
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println(secrets.Data)
+		fmt.Println(secrets.Data["mode"])
+		fmt.Println(secrets.Data["deploy"])
 		// data := map[string]interface{}{}
 		// data[dockerService] = args[0]
 		// _, err := vault.KV.Patch(ctx, dockerAlias, data)

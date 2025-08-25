@@ -37,7 +37,7 @@ volumes:
 	redis-data:
 `
 
-func TestComposeInit(t *testing.T) {
+func TestComposeNew(t *testing.T) {
 	compose := Compose{Tag: "latest"}
 
 	for idx, tmpl := range []string{composeTmpl1, composeTmpl2} {
@@ -45,7 +45,7 @@ func TestComposeInit(t *testing.T) {
 		if err := os.WriteFile(tmpfile, []byte(tmpl), 0644); err != nil {
 			t.Errorf("Ошибка записи файла: %v", err)
 		}
-		if err := compose.Init(tmpfile, fmt.Sprintf("%d", idx)); err != nil {
+		if err := compose.New(tmpfile, fmt.Sprintf("%d", idx)); err != nil {
 			t.Errorf("Ошибка инициализации: %v", err)
 		}
 		defer os.Remove(tmpfile)

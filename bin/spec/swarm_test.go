@@ -40,7 +40,7 @@ volumes:
 	mysql-data:
 `
 
-func TestSwarmInit(t *testing.T) {
+func TestSwarmNew(t *testing.T) {
 	swarm := Swarm{Tag: "latest", Replicas: 1}
 
 	for idx, tmpl := range []string{swarmTmpl1, swarmTmpl2} {
@@ -48,7 +48,7 @@ func TestSwarmInit(t *testing.T) {
 		if err := os.WriteFile(tmpfile, []byte(tmpl), 0644); err != nil {
 			t.Errorf("Ошибка записи файла: %v", err)
 		}
-		if err := swarm.Init(tmpfile, fmt.Sprintf("%d", idx)); err != nil {
+		if err := swarm.New(tmpfile, fmt.Sprintf("%d", idx)); err != nil {
 			t.Errorf("Ошибка инициализации: %v", err)
 		}
 		defer os.Remove(tmpfile)

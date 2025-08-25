@@ -12,11 +12,20 @@ import (
 Swarm - абстракция над docker swarm спецификацией в файлах конфигурации.
 */
 type Swarm struct {
-	Tag      string
-	Replicas int
+	Tag      string `json:"tag"`
+	Replicas int    `json:"replicas"`
 }
 
-func (s *Swarm) Init(path, alias string) error {
+func (s *Swarm) Init() {
+	if s.Tag == "" {
+		s.Tag = "latest"
+	}
+	if s.Replicas == 0 {
+		s.Replicas = 1
+	}
+}
+
+func (s *Swarm) New(path, alias string) error {
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {
 		return err
