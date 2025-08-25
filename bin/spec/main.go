@@ -7,7 +7,7 @@ import (
 )
 
 type Spec interface {
-	Init() error
+	Init(path, alias string) error
 }
 
 func NewSpec(mode string) (Spec, error) {

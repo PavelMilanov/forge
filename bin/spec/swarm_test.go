@@ -1,55 +1,57 @@
 package spec
 
 import (
-	"bytes"
-	"html/template"
+	"fmt"
+	"os"
 	"testing"
 )
 
-const swarmTmp1 = `
+const swarmTmpl1 = `
 services:
-  alpine:
-    image: alpine
-    tag: {{.Tag}}
-    deployment:
-      replicas: {{.Replicas}}
+  mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+    volumes:
+      - mysql-data:/var/lib/mysql
 
-  nginx:
-    image: nginx
-    tag: {{.Tag}}
-    deployment:
-      replicas: {{.Replicas}}
+volumes:
+	mysql-data:
 `
 
-const swarmTmp2 = `
+const swarmTmpl2 = `
 services:
-  alpine:
-    image: alpine
-    tag: {{.Tag}}
-
-  nginx:
-    image: nginx
-    tag: {{.Tag}}
-    deployment:
+  mysql:
+    image: mysql:{{.Tag}}
+    deploy:
       replicas: {{.Replicas}}
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+	mysql-data:
 `
 
-func TestSwarm(t *testing.T) {
+func TestSwarmInit(t *testing.T) {
 	swarm := Swarm{Tag: "latest", Replicas: 1}
 
-	for _, tmpl := range []string{swarmTmp1, swarmTmp2} {
-		tmpl, err := template.New("swarm-template").Parse(tmpl)
-		if err != nil {
-			t.Errorf("Ошибка парсинга шаблона: %v", err)
+	for idx, tmpl := range []string{swarmTmpl1, swarmTmpl2} {
+		tmpfile := fmt.Sprintf("swarm-template-%d.yaml", idx)
+		if err := os.WriteFile(tmpfile, []byte(tmpl), 0644); err != nil {
+			t.Errorf("Ошибка записи файла: %v", err)
 		}
-		var buf bytes.Buffer
-
-		err = tmpl.Execute(&buf, swarm)
-		if err != nil {
-			t.Error(err)
+		if err := swarm.Init(tmpfile, fmt.Sprintf("%d", idx)); err != nil {
+			t.Errorf("Ошибка инициализации: %v", err)
 		}
-
-		t.Log(buf.String())
+		defer os.Remove(tmpfile)
 	}
 
 }

@@ -7,7 +7,7 @@ type Compose struct {
 	Tag string
 }
 
-func (c *Compose) Init() error {
+func (c *Compose) Init(path, alias string) error {
 
 	return nil
 }
