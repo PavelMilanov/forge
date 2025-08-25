@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/PavelMilanov/forge/api"
 	"github.com/PavelMilanov/forge/config"
-	"github.com/PavelMilanov/forge/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +13,7 @@ var (
 	projectFile  string
 	projectMode  string
 	projectAlias string
-	vault        *utils.VaultClient
+	vault        *api.VaultClient
 )
 
 var rootCmd = &cobra.Command{
@@ -33,14 +33,14 @@ func Execute() {
 
 func init() {
 	var err error
-	vault, err = utils.NewVaultClient()
+	vault, err = api.NewVaultClient()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
-func addDefaultFlags(cmd *cobra.Command) {
+func defaultFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&projectFile, "file", "f", "", "path to project/to/configuration.yml")
 	cmd.Flags().StringVarP(&projectMode, "mode", "m", "compose", "project mode")
 	cmd.Flags().StringVarP(&projectAlias, "alias", "a", "", "unique project name")

@@ -13,7 +13,7 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Project initialization",
 	Example: `
-forge init -f docker/test/docker-compose.yaml -m compose -a dev
+forge init -f path/to/configFile.yaml -m compose -a dev
 `,
 
 	Args: cobra.NoArgs,
@@ -41,5 +41,5 @@ forge init -f docker/test/docker-compose.yaml -m compose -a dev
 
 func init() {
 	rootCmd.AddCommand(initCmd)
-	addDefaultFlags(initCmd)
+	defaultFlags(initCmd)
 }

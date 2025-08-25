@@ -48,5 +48,5 @@ services:
 
 func init() {
 	rootCmd.AddCommand(deployCmd)
-	addDefaultFlags(deployCmd)
+	defaultFlags(deployCmd)
 }
