@@ -1,8 +1,8 @@
 package spec
 
 import (
-	"bytes"
-	"html/template"
+	"fmt"
+	"os"
 	"testing"
 )
 
@@ -40,18 +40,14 @@ volumes:
 func TestComposeInit(t *testing.T) {
 	compose := Compose{Tag: "latest"}
 
-	for _, tmpl := range []string{composeTmpl1, composeTmpl2} {
-		tmpl, err := template.New("compose-template").Parse(tmpl)
-		if err != nil {
-			t.Errorf("Ошибка парсинга шаблона: %v", err)
+	for idx, tmpl := range []string{composeTmpl1, composeTmpl2} {
+		tmpfile := fmt.Sprintf("compose-template-%d.yaml", idx)
+		if err := os.WriteFile(tmpfile, []byte(tmpl), 0644); err != nil {
+			t.Errorf("Ошибка записи файла: %v", err)
 		}
-		var buf bytes.Buffer
-
-		err = tmpl.Execute(&buf, compose)
-		if err != nil {
-			t.Error(err)
+		if err := compose.Init(tmpfile, fmt.Sprintf("%d", idx)); err != nil {
+			t.Errorf("Ошибка инициализации: %v", err)
 		}
-
-		t.Log(buf.String())
+		defer os.Remove(tmpfile)
 	}
 }

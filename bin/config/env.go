@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/spf13/viper"
 )
 
@@ -34,10 +36,12 @@ func NewEnv(path, file string) (*Env, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	err = viper.Unmarshal(&env)
 	if err != nil {
 		return nil, err
+	}
+	if env.Vault.Url == "" || env.Vault.Token == "" || env.Vault.Path == "" {
+		return nil, fmt.Errorf("invalid vault configuration")
 	}
 	return &env, nil
 }

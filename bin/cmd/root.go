@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/PavelMilanov/forge/config"
@@ -32,7 +33,12 @@ func Execute() {
 }
 
 func init() {
-	vault = utils.NewVaultClient()
+	var err error
+	vault, err = utils.NewVaultClient()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func addDefaultFlags(cmd *cobra.Command) {
