@@ -10,11 +10,10 @@ import (
 )
 
 var (
-	// project       *docker.Stack
-	dockerFile    string
-	dockerService string
-	dockerAlias   string
-	vault         *utils.VaultClient
+	projectFile  string
+	projectMode  string
+	projectAlias string
+	vault        *utils.VaultClient
 )
 
 var rootCmd = &cobra.Command{
@@ -42,15 +41,16 @@ func init() {
 }
 
 func addDefaultFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&dockerFile, "file", "f", "", "path to dockerProject.yml")
-	cmd.Flags().StringVarP(&dockerAlias, "alias", "a", "", "unique project name")
+	cmd.Flags().StringVarP(&projectFile, "file", "f", "", "path to project/to/configuration.yml")
+	cmd.Flags().StringVarP(&projectMode, "mode", "m", "compose", "project mode")
+	cmd.Flags().StringVarP(&projectAlias, "alias", "a", "", "unique project name")
 	cmd.MarkFlagRequired("file")
 	cmd.MarkFlagRequired("alias")
 }
 
 func addAliasFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&dockerAlias, "alias", "a", "", "project name")
-	cmd.Flags().StringVarP(&dockerService, "service", "s", "", "service of project")
-	cmd.MarkFlagRequired("alias")
-	cmd.MarkFlagRequired("service")
+	// cmd.Flags().StringVarP(&proAlias, "alias", "a", "", "project name")
+	// cmd.Flags().StringVarP(&dockerService, "service", "s", "", "service of project")
+	// cmd.MarkFlagRequired("alias")
+	// cmd.MarkFlagRequired("service")
 }
