@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/PavelMilanov/forge/config"
 )
@@ -46,10 +48,35 @@ func (s *Swarm) New(path, alias string) error {
 }
 
 /*
-Parse преобразует входящие данные из Vault в форматированный вывод согласно модели.
+Parse преобразует входящие данные из Vault в форматированный вывод модели.
 */
 func (s *Swarm) Parse(data map[string]any) {
 	s.Tag = data["tag"].(string)
 	s.Replicas = data["replicas"].(int)
-	fmt.Printf("%+v\n", *s)
+	fmt.Printf(`tag: %s
+replicas: %d
+`, s.Tag, s.Replicas)
+}
+
+func (s *Swarm) Update(data []string) {
+	if len(data) != 2 { // у спецификации swarm 2 параметра
+		fmt.Println("Ошибка: ожидается два параметра")
+		os.Exit(1)
+	}
+	buf := make(map[string]string)
+	for _, param := range data {
+		value := strings.Split(param, "=")
+		if len(value) != 2 {
+			fmt.Println("Format is incorrect. Try: forge set <project> -p param=value")
+			os.Exit(1)
+		}
+		buf[value[0]] = value[1]
+	}
+	s.Tag = buf["tag"]
+	format, err := strconv.Atoi(buf["replicas"])
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	s.Replicas = format
 }

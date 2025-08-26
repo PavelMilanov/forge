@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"strings"
 
 	"github.com/PavelMilanov/forge/config"
 )
@@ -42,9 +43,27 @@ func (c *Compose) New(path, alias string) error {
 }
 
 /*
-Parse преобразует входящие данные из Vault в форматированный вывод согласно модели.
+Parse преобразует входящие данные из Vault в форматированный вывод модели.
 */
 func (c *Compose) Parse(data map[string]any) {
 	c.Tag = data["tag"].(string)
-	fmt.Printf("%+v\n", *c)
+	fmt.Printf(`tag: %s
+`, c.Tag)
+}
+
+func (c *Compose) Update(data []string) {
+	if len(data) != 1 { // у спецификации compose 1 параметр
+		fmt.Println("Ошибка: ожидается один параметр")
+		os.Exit(1)
+	}
+	buf := make(map[string]string)
+	for _, param := range data {
+		value := strings.Split(param, "=")
+		if len(value) != 2 {
+			fmt.Println("Format is incorrect. Try: forge set <project> -p param=value")
+			os.Exit(1)
+		}
+		buf[value[0]] = value[1]
+	}
+	c.Tag = buf["tag"]
 }

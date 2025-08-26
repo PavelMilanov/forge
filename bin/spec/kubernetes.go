@@ -13,3 +13,7 @@ func (k *Kubernetes) New(path, alias string) error {
 
 func (k *Kubernetes) Parse(map[string]any) {
 }
+
+func (k *Kubernetes) Update(data []string) {
+
+}

@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/PavelMilanov/forge/api"
 	"github.com/PavelMilanov/forge/config"
+	"github.com/PavelMilanov/forge/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -35,8 +35,7 @@ func init() {
 	var err error
 	vault, err = api.NewVaultClient()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		errors.VaultErrors(err)
 	}
 }
 
