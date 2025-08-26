@@ -51,3 +51,20 @@ func TestComposeNew(t *testing.T) {
 		defer os.Remove(tmpfile)
 	}
 }
+
+func TestComposeInit(t *testing.T) {
+	model := Compose{}
+	model.Init()
+	if model.Tag != "latest" {
+		t.Errorf("Неверная инициализация: %+v", model)
+	}
+}
+
+func TestComposeParse(t *testing.T) {
+	data := map[string]any{"tag": "latest"}
+	model := Compose{}
+	model.Parse(data)
+	if model.Tag != "latest" {
+		t.Errorf("Неверный парсинг: %s", model.Tag)
+	}
+}

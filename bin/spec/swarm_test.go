@@ -55,3 +55,20 @@ func TestSwarmNew(t *testing.T) {
 	}
 
 }
+
+func TestSwarmInit(t *testing.T) {
+	model := Swarm{Tag: "latest", Replicas: 1}
+	model.Init()
+	if model.Tag != "latest" || model.Replicas != 1 {
+		t.Errorf("Неверная инициализация модели: %+v", model)
+	}
+}
+
+func TestSwarmParse(t *testing.T) {
+	data := map[string]any{"tag": "latest", "replicas": 1}
+	model := Swarm{}
+	model.Parse(data)
+	if model.Tag != "latest" || model.Replicas != 1 {
+		t.Errorf("Неверная инициализация модели: %+v", model)
+	}
+}

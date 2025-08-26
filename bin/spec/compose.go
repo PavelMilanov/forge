@@ -2,6 +2,7 @@ package spec
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"os"
 
@@ -15,6 +16,9 @@ type Compose struct {
 	Tag string `json:"tag"`
 }
 
+/*
+Init инициализирует модель с параметрами по умолчанию.
+*/
 func (c *Compose) Init() {
 	if c.Tag == "" {
 		c.Tag = "latest"
@@ -35,4 +39,12 @@ func (c *Compose) New(path, alias string) error {
 		return err
 	}
 	return nil
+}
+
+/*
+Parse преобразует входящие данные из Vault в форматированный вывод согласно модели.
+*/
+func (c *Compose) Parse(data map[string]any) {
+	c.Tag = data["tag"].(string)
+	fmt.Printf("%+v\n", *c)
 }

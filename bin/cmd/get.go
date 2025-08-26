@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/PavelMilanov/forge/spec"
 	"github.com/spf13/cobra"
 )
 
@@ -33,23 +34,21 @@ Output:
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		// project, err := spec.NewSpec(secrets.Data["mode"].(string))
-		// if err != nil {
-		// 	fmt.Println(err)
-		// 	os.Exit(1)
-		// }
 		value, exists := secrets.Data["deploy"]
 		if !exists {
 			fmt.Println("value not found")
 			os.Exit(1)
 		}
 		if param != "" {
-			fmt.Println(value.(map[string]interface{})[param])
+			fmt.Println(value.(map[string]any)[param])
 		} else {
-			for key, val := range value.(map[string]interface{}) {
-				text := fmt.Sprintf("%s:%s", key, val)
-				fmt.Println(text)
+			project, err := spec.NewSpec(secrets.Data["mode"].(string))
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
 			}
+			project.Parse(secrets.Data["deploy"].(map[string]any))
+			os.Exit(0)
 		}
 	},
 }

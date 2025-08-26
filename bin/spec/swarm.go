@@ -2,6 +2,7 @@ package spec
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"os"
 
@@ -16,6 +17,9 @@ type Swarm struct {
 	Replicas int    `json:"replicas"`
 }
 
+/*
+Init инициализирует модель с параметрами по умолчанию.
+*/
 func (s *Swarm) Init() {
 	if s.Tag == "" {
 		s.Tag = "latest"
@@ -39,4 +43,13 @@ func (s *Swarm) New(path, alias string) error {
 		return err
 	}
 	return nil
+}
+
+/*
+Parse преобразует входящие данные из Vault в форматированный вывод согласно модели.
+*/
+func (s *Swarm) Parse(data map[string]any) {
+	s.Tag = data["tag"].(string)
+	s.Replicas = data["replicas"].(int)
+	fmt.Printf("%+v\n", *s)
 }

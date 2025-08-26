@@ -9,6 +9,7 @@ import (
 type Spec interface {
 	Init()
 	New(path, alias string) error
+	Parse(map[string]any)
 }
 
 func NewSpec(mode string) (Spec, error) {
