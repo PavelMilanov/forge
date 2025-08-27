@@ -11,6 +11,7 @@ type Spec interface {
 	New(path, alias string) error
 	Parse(map[string]any)
 	Update([]string)
+	Print(alias string)
 }
 
 func NewSpec(mode string) (Spec, error) {

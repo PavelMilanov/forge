@@ -48,14 +48,11 @@ func (s *Swarm) New(path, alias string) error {
 }
 
 /*
-Parse преобразует входящие данные из Vault в форматированный вывод модели.
+Parse преобразует входящие данные из Vault в структуру модели.
 */
 func (s *Swarm) Parse(data map[string]any) {
 	s.Tag = data["tag"].(string)
 	s.Replicas = data["replicas"].(int)
-	fmt.Printf(`tag: %s
-replicas: %d
-`, s.Tag, s.Replicas)
 }
 
 func (s *Swarm) Update(data []string) {
@@ -79,4 +76,11 @@ func (s *Swarm) Update(data []string) {
 		os.Exit(1)
 	}
 	s.Replicas = format
+}
+
+func (s *Swarm) Print(alias string) {
+	fmt.Printf(`%s
+  tag: %s
+  replicas: %d
+`, alias, s.Tag, s.Replicas)
 }

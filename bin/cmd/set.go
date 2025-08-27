@@ -47,7 +47,7 @@ forge set dev -p tags=latest -p replicas=3
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Printf("Project updated successfully: %+v\n", project)
+		project.Print(args[0])
 		os.Exit(0)
 	},
 }

@@ -43,6 +43,7 @@ forge get <project> -p <param>
 				errors.SpecErrors(err)
 			}
 			project.Parse(secrets.Data["deploy"].(map[string]any))
+			project.Print(args[0])
 			os.Exit(0)
 		}
 	},

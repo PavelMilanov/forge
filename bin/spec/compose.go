@@ -43,14 +43,11 @@ func (c *Compose) New(path, alias string) error {
 }
 
 /*
-Parse преобразует входящие данные из Vault в форматированный вывод модели.
+Parse преобразует входящие данные из Vault в структуру модели.
 */
 func (c *Compose) Parse(data map[string]any) {
 	c.Tag = data["tag"].(string)
-	fmt.Printf(`tag: %s
-`, c.Tag)
 }
-
 func (c *Compose) Update(data []string) {
 	if len(data) != 1 { // у спецификации compose 1 параметр
 		fmt.Println("Ошибка: ожидается один параметр")
@@ -66,4 +63,10 @@ func (c *Compose) Update(data []string) {
 		buf[value[0]] = value[1]
 	}
 	c.Tag = buf["tag"]
+}
+
+func (c *Compose) Print(alias string) {
+	fmt.Printf(`%s
+  tag: %s
+`, alias, c.Tag)
 }

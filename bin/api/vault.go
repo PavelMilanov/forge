@@ -26,10 +26,6 @@ func NewVaultClient() (*VaultAPI, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = client.Auth().Token().RenewSelf(2764800) // 30 days
-	if err != nil {
-		return nil, err
-	}
 	return &VaultAPI{
 		ENV:    env,
 		Client: client,
