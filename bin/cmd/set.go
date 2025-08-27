@@ -29,7 +29,7 @@ forge set dev -p tags=latest -p replicas=3
 			os.Exit(1)
 		}
 		ctx := context.Background()
-		secrets, err := vault.KV.Get(ctx, args[0])
+		secrets, err := vault.API.Get(ctx, args[0])
 		if err != nil {
 			errors.VaultErrors(err)
 		}
@@ -42,7 +42,7 @@ forge set dev -p tags=latest -p replicas=3
 			errors.SpecErrors(err)
 		}
 		project.Update(params)
-		_, err = vault.KV.Patch(ctx, args[0], map[string]any{"deploy": project})
+		_, err = vault.API.Patch(ctx, args[0], map[string]any{"deploy": project})
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

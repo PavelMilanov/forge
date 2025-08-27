@@ -27,7 +27,7 @@ forge get <project> -p <param>
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		secrets, err := vault.KV.Get(ctx, args[0])
+		secrets, err := vault.API.Get(ctx, args[0])
 		if err != nil {
 			errors.VaultErrors(err)
 		}

@@ -5,16 +5,17 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
-type VaultClient struct {
-	ENV *config.Env
-	KV  *api.KVv2
+type VaultAPI struct {
+	ENV    *config.Env
+	Client *api.Client
+	API    *api.KVv2
 }
 
 /*
  * Initialize a new Vault client
  *
  */
-func NewVaultClient() (*VaultClient, error) {
+func NewVaultClient() (*VaultAPI, error) {
 	env, err := config.NewEnv(config.CONFIG_PATH, config.CONFIG_FILE)
 	if err != nil {
 		return nil, err
@@ -25,15 +26,25 @@ func NewVaultClient() (*VaultClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	client.SetToken(env.Vault.Token)
 	_, err = client.Auth().Token().RenewSelf(2764800) // 30 days
 	if err != nil {
 		return nil, err
 	}
-
-	kv := client.KVv2(env.Vault.Path)
-	return &VaultClient{
-		ENV: env,
-		KV:  kv,
+	return &VaultAPI{
+		ENV:    env,
+		Client: client,
 	}, nil
+}
+
+func (v *VaultAPI) RenewToken() error {
+	_, err := v.Client.Auth().Token().RenewSelf(2764800) // 30 days
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (v *VaultAPI) Connect() {
+	v.Client.SetToken(v.ENV.Vault.Token)
+	v.API = v.Client.KVv2(v.ENV.Vault.Path)
 }

@@ -25,9 +25,9 @@ forge init -f path/to/configFile.yaml -m compose -a dev
 			os.Exit(1)
 		}
 		project.Init()
-		_, err = vault.KV.Get(ctx, projectAlias) // ищет указанный проект в хранилище, если не найден, то создаем новый
+		_, err = vault.API.Get(ctx, projectAlias) // ищет указанный проект в хранилище, если не найден, то создаем новый
 		if err != nil {
-			_, err = vault.KV.Put(ctx, projectAlias, map[string]any{"deploy": project, "mode": projectMode})
+			_, err = vault.API.Put(ctx, projectAlias, map[string]any{"deploy": project, "mode": projectMode})
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)

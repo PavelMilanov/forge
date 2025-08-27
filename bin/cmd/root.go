@@ -13,7 +13,7 @@ var (
 	projectFile  string
 	projectMode  string
 	projectAlias string
-	vault        *api.VaultClient
+	vault        *api.VaultAPI
 )
 
 var rootCmd = &cobra.Command{
@@ -37,6 +37,7 @@ func init() {
 	if err != nil {
 		errors.VaultErrors(err)
 	}
+	vault.Connect()
 }
 
 func defaultFlags(cmd *cobra.Command) {
