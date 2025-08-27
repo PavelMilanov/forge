@@ -44,7 +44,7 @@ func (v *VaultAPI) RenewToken() error {
 	return nil
 }
 
-func (v *VaultAPI) Connect() {
+func (v *VaultAPI) Set() {
 	v.Client.SetToken(v.ENV.Vault.Token)
 	v.API = v.Client.KVv2(v.ENV.Vault.Path)
 }
