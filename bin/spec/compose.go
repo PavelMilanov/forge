@@ -64,7 +64,9 @@ func (c *Compose) Update(data []string) error {
 		}
 		buf[value[0]] = value[1]
 	}
-	c.Tag = buf["tag"]
+	if len(buf["tag"]) > 0 {
+		c.Tag = buf["tag"]
+	}
 	return nil
 }
 

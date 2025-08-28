@@ -6,7 +6,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/PavelMilanov/forge/errors"
 	"github.com/PavelMilanov/forge/spec"
@@ -44,7 +43,6 @@ forge get <project> -p <param>
 			}
 			project.Parse(secrets.Data["deploy"].(map[string]any))
 			project.Print(args[0])
-			os.Exit(0)
 		}
 	},
 }

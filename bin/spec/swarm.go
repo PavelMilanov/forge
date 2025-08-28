@@ -67,8 +67,8 @@ func (s *Swarm) Parse(data map[string]any) {
 Update обновляет данные модели на основе входящих данных.
 */
 func (s *Swarm) Update(data []string) error {
-	if len(data) != 2 { // у спецификации swarm 2 параметра
-		return fmt.Errorf("2 parameters expected")
+	if len(data) > 2 { // у спецификации swarm [1 или 2] параметра
+		return fmt.Errorf("1 or 2 parameters expected")
 	}
 	buf := make(map[string]string)
 	for _, param := range data {
@@ -78,12 +78,16 @@ func (s *Swarm) Update(data []string) error {
 		}
 		buf[value[0]] = value[1]
 	}
-	s.Tag = buf["tag"]
-	format, err := strconv.Atoi(buf["replicas"])
-	if err != nil {
-		return err
+	if len(buf["tag"]) > 0 {
+		s.Tag = buf["tag"]
 	}
-	s.Replicas = format
+	if len(buf["replicas"]) > 0 {
+		format, err := strconv.Atoi(buf["replicas"])
+		if err != nil {
+			return err
+		}
+		s.Replicas = format
+	}
 	return nil
 }
 

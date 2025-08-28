@@ -41,14 +41,17 @@ forge set dev -p tags=latest -p replicas=3
 		if err != nil {
 			errors.SpecErrors(err)
 		}
-		project.Update(params)
+		project.Parse(secrets.Data["deploy"].(map[string]any))
+		if err := project.Update(params); err != nil {
+			errors.SpecErrors(err)
+		}
 		_, err = vault.API.Patch(ctx, args[0], map[string]any{"deploy": project})
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 		project.Print(args[0])
-		os.Exit(0)
+
 	},
 }
 

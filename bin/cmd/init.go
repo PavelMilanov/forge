@@ -34,7 +34,6 @@ forge init -f path/to/configFile.yaml -m compose -a dev
 			}
 			text := fmt.Sprintf("The project %s initialization was successful\nSee %s", projectAlias, vault.ENV.Vault.Url)
 			fmt.Println(text)
-			os.Exit(0)
 		}
 		fmt.Println("The project already initialized")
 	},
