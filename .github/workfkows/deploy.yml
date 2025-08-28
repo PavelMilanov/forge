@@ -7,9 +7,7 @@ on:
       - ".github/**"
       - "vagrant/**"
       - "README.md"
-      - "Dockerfile"
       - "Makefile"
-      - "version.txt"
       - "docs/**"
     branches:
       - main
