@@ -50,10 +50,3 @@ func defaultFlags(cmd *cobra.Command) {
 	cmd.MarkFlagRequired("file")
 	cmd.MarkFlagRequired("alias")
 }
-
-func addAliasFlags(cmd *cobra.Command) {
-	// cmd.Flags().StringVarP(&proAlias, "alias", "a", "", "project name")
-	// cmd.Flags().StringVarP(&dockerService, "service", "s", "", "service of project")
-	// cmd.MarkFlagRequired("alias")
-	// cmd.MarkFlagRequired("service")
-}

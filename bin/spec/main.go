@@ -11,7 +11,7 @@ NewSpec - спецификация данных инфраструктуры.
 */
 type Spec interface {
 	Init()
-	New(path, alias string) error
+	Generate(path, alias string) (string, error)
 	Parse(map[string]any)
 	Update([]string) error
 	Print(alias string)

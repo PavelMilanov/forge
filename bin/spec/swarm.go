@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -32,20 +33,24 @@ func (s *Swarm) Init() {
 	}
 }
 
-func (s *Swarm) New(path, alias string) error {
+/*
+Generate генерирует файл конфигурации на основе шаблона и данных модели.
+*/
+func (s *Swarm) Generate(path, alias string) (string, error) {
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {
-		return err
+		return "", err
 	}
 	var buf bytes.Buffer
 	err = tmpl.Execute(&buf, s)
 	if err != nil {
-		return err
+		return "", err
 	}
-	if err := os.WriteFile(config.SPECMODE["swarm"]+"-"+alias+".yml", buf.Bytes(), 0644); err != nil {
-		return err
+	fileName := filepath.Join(config.CONFIG_PATH, fmt.Sprintf("%s-%s.yml", config.SPECMODE["swarm"], alias))
+	if err := os.WriteFile(fileName, buf.Bytes(), 0644); err != nil {
+		return "", err
 	}
-	return nil
+	return fileName, nil
 }
 
 /*

@@ -16,7 +16,7 @@ var params []string
 
 // setCmd represents the set command
 var setCmd = &cobra.Command{
-	Use:   "set [OPTIONS]",
+	Use:   "set [OPTIONS] [FLAGS]",
 	Short: "Set values of the project",
 	Example: `
 forge set dev -p tags=latest -p replicas=3
@@ -31,7 +31,7 @@ forge set dev -p tags=latest -p replicas=3
 		if err != nil {
 			errors.VaultErrors(err)
 		}
-		_, exists := secrets.Data["deploy"]
+		value, exists := secrets.Data["deploy"]
 		if !exists {
 			errors.VaultErrors(fmt.Errorf("value not found"))
 		}
@@ -39,7 +39,7 @@ forge set dev -p tags=latest -p replicas=3
 		if err != nil {
 			errors.SpecErrors(err)
 		}
-		project.Parse(secrets.Data["deploy"].(map[string]any))
+		project.Parse(value.(map[string]any))
 		if err := project.Update(params); err != nil {
 			errors.SpecErrors(err)
 		}
@@ -54,6 +54,5 @@ forge set dev -p tags=latest -p replicas=3
 
 func init() {
 	rootCmd.AddCommand(setCmd)
-	addAliasFlags(setCmd)
 	setCmd.Flags().StringSliceVarP(&params, "param", "p", []string{}, "project parameter")
 }

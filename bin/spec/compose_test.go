@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/PavelMilanov/forge/config"
 )
 
 const composeTmpl1 = `
@@ -37,18 +39,25 @@ volumes:
 	redis-data:
 `
 
-func TestComposeNew(t *testing.T) {
+func TestComposeGenerate(t *testing.T) {
 	compose := Compose{Tag: "latest"}
-
+	config.CONFIG_PATH = "."
 	for idx, tmpl := range []string{composeTmpl1, composeTmpl2} {
 		tmpfile := fmt.Sprintf("compose-template-%d.yaml", idx)
 		if err := os.WriteFile(tmpfile, []byte(tmpl), 0644); err != nil {
-			t.Errorf("Ошибка записи файла: %v", err)
+			t.Fatalf("Ошибка записи файла: %v", err)
 		}
-		if err := compose.New(tmpfile, fmt.Sprintf("%d", idx)); err != nil {
-			t.Errorf("Ошибка инициализации: %v", err)
+		config, err := compose.Generate(tmpfile, fmt.Sprintf("%d", idx))
+		if err != nil {
+			t.Fatalf("Ошибка генерации: %s", err)
 		}
 		defer os.Remove(tmpfile)
+		r, err := os.ReadFile(config)
+		if err != nil {
+			t.Fatalf("Ошибка чтения файла: %v", err)
+		}
+		t.Log(string(r))
+		defer os.Remove(config)
 	}
 }
 

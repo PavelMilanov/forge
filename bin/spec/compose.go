@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/PavelMilanov/forge/config"
@@ -26,20 +27,24 @@ func (c *Compose) Init() {
 	}
 }
 
-func (c *Compose) New(path, alias string) error {
+/*
+Generate генерирует файл конфигурации на основе шаблона и данных модели.
+*/
+func (c *Compose) Generate(path, alias string) (string, error) {
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {
-		return err
+		return "", err
 	}
 	var buf bytes.Buffer
 	err = tmpl.Execute(&buf, c)
 	if err != nil {
-		return err
+		return "", err
 	}
-	if err := os.WriteFile(config.SPECMODE["compose"]+"-"+alias+".yml", buf.Bytes(), 0644); err != nil {
-		return err
+	fileName := filepath.Join(config.CONFIG_PATH, fmt.Sprintf("%s-%s.yml", config.SPECMODE["compose"], alias))
+	if err := os.WriteFile(fileName, buf.Bytes(), 0644); err != nil {
+		return "", err
 	}
-	return nil
+	return fileName, nil
 }
 
 /*

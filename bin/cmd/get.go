@@ -14,14 +14,11 @@ import (
 
 var param string
 
-// getCmd represents the get command
 var getCmd = &cobra.Command{
-	Use:   "get [OPTIONS]",
+	Use:   "get [OPTIONS] [FLAGS]",
 	Short: "Get project information",
 	Example: `
-forge get <project>
-
-forge get <project> -p <param>
+forge get <project> | forge get <project> -p <param>
 `,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -41,7 +38,7 @@ forge get <project> -p <param>
 			if err != nil {
 				errors.SpecErrors(err)
 			}
-			project.Parse(secrets.Data["deploy"].(map[string]any))
+			project.Parse(value.(map[string]any))
 			project.Print(args[0])
 		}
 	},
@@ -49,6 +46,5 @@ forge get <project> -p <param>
 
 func init() {
 	rootCmd.AddCommand(getCmd)
-	addAliasFlags(getCmd)
 	getCmd.Flags().StringVarP(&param, "param", "p", "", "project parameter")
 }

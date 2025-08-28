@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/PavelMilanov/forge/config"
 )
 
 const swarmTmpl1 = `
@@ -40,19 +42,26 @@ volumes:
 	mysql-data:
 `
 
-func TestSwarmNew(t *testing.T) {
+func TestSwarmGenerate(t *testing.T) {
 	swarm := Swarm{Tag: "latest", Replicas: 1}
+	config.CONFIG_PATH = "."
 	for idx, tmpl := range []string{swarmTmpl1, swarmTmpl2} {
 		tmpfile := fmt.Sprintf("swarm-template-%d.yaml", idx)
 		if err := os.WriteFile(tmpfile, []byte(tmpl), 0644); err != nil {
 			t.Fatalf("Ошибка записи файла: %v", err)
 		}
-		if err := swarm.New(tmpfile, fmt.Sprintf("%d", idx)); err != nil {
-			t.Fatalf("Ошибка инициализации: %v", err)
+		config, err := swarm.Generate(tmpfile, fmt.Sprintf("%d", idx))
+		if err != nil {
+			t.Fatalf("Ошибка генерации: %v", err)
 		}
 		defer os.Remove(tmpfile)
+		r, err := os.ReadFile(config)
+		if err != nil {
+			t.Fatalf("Ошибка чтения файла: %v", err)
+		}
+		t.Log(string(r))
+		defer os.Remove(config)
 	}
-
 }
 
 func TestSwarmInit(t *testing.T) {
@@ -64,7 +73,7 @@ func TestSwarmInit(t *testing.T) {
 }
 
 func TestSwarmParse(t *testing.T) {
-	data := map[string]any{"tag": "test", "replicas": 10}
+	data := map[string]any{"tag": "test", "replicas": "10"}
 	model := Swarm{}
 	model.Parse(data)
 	if model.Tag != "test" || model.Replicas != 10 {
