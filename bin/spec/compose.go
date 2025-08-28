@@ -48,23 +48,29 @@ Parse преобразует входящие данные из Vault в стр�
 func (c *Compose) Parse(data map[string]any) {
 	c.Tag = data["tag"].(string)
 }
-func (c *Compose) Update(data []string) {
+
+/*
+Update обновляет данные модели на основе входящих данных.
+*/
+func (c *Compose) Update(data []string) error {
 	if len(data) != 1 { // у спецификации compose 1 параметр
-		fmt.Println("Ошибка: ожидается один параметр")
-		os.Exit(1)
+		return fmt.Errorf("1 parameter expected")
 	}
 	buf := make(map[string]string)
 	for _, param := range data {
 		value := strings.Split(param, "=")
 		if len(value) != 2 {
-			fmt.Println("Format is incorrect. Try: forge set <project> -p param=value")
-			os.Exit(1)
+			return fmt.Errorf("Format is incorrect. Try: forge set <project> -p param=value")
 		}
 		buf[value[0]] = value[1]
 	}
 	c.Tag = buf["tag"]
+	return nil
 }
 
+/*
+Print форматированный вывод данных модели в консоль.
+*/
 func (c *Compose) Print(alias string) {
 	fmt.Printf(`%s
   tag: %s

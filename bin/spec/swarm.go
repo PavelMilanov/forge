@@ -55,29 +55,33 @@ func (s *Swarm) Parse(data map[string]any) {
 	s.Replicas = data["replicas"].(int)
 }
 
-func (s *Swarm) Update(data []string) {
+/*
+Update обновляет данные модели на основе входящих данных.
+*/
+func (s *Swarm) Update(data []string) error {
 	if len(data) != 2 { // у спецификации swarm 2 параметра
-		fmt.Println("Ошибка: ожидается два параметра")
-		os.Exit(1)
+		return fmt.Errorf("2 parameters expected")
 	}
 	buf := make(map[string]string)
 	for _, param := range data {
 		value := strings.Split(param, "=")
 		if len(value) != 2 {
-			fmt.Println("Format is incorrect. Try: forge set <project> -p param=value")
-			os.Exit(1)
+			return fmt.Errorf("Format is incorrect. Try: forge set <project> -p param=value")
 		}
 		buf[value[0]] = value[1]
 	}
 	s.Tag = buf["tag"]
 	format, err := strconv.Atoi(buf["replicas"])
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 	s.Replicas = format
+	return nil
 }
 
+/*
+Print форматированный вывод данных модели в консоль.
+*/
 func (s *Swarm) Print(alias string) {
 	fmt.Printf(`%s
   tag: %s

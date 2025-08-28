@@ -61,10 +61,31 @@ func TestComposeInit(t *testing.T) {
 }
 
 func TestComposeParse(t *testing.T) {
-	data := map[string]any{"tag": "latest"}
+	data := map[string]any{"tag": "test"}
 	model := Compose{}
 	model.Parse(data)
-	if model.Tag != "latest" {
+	if model.Tag != "test" {
 		t.Errorf("Неверный парсинг: %s", model.Tag)
 	}
+	t.Logf("%+v", model)
+}
+
+func TestComposeUpdate(t *testing.T) {
+	t.Run("valid", func(t *testing.T) {
+		model := Compose{}
+		input := []string{"tag=test"}
+		if error := model.Update(input); error != nil {
+			t.Errorf("Ошибка обновления: %v", error)
+		}
+		if model.Tag != "test" {
+			t.Errorf("Неверное обновление: %s", model.Tag)
+		}
+	})
+	t.Run("not valid", func(t *testing.T) {
+		input := []string{"tag test"}
+		model := Compose{}
+		if err := model.Update(input); err != nil {
+			t.Log(err)
+		}
+	})
 }

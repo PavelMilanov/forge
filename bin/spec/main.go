@@ -6,11 +6,14 @@ import (
 	"github.com/PavelMilanov/forge/config"
 )
 
+/*
+NewSpec - спецификация данных инфраструктуры.
+*/
 type Spec interface {
 	Init()
 	New(path, alias string) error
 	Parse(map[string]any)
-	Update([]string)
+	Update([]string) error
 	Print(alias string)
 }
 
