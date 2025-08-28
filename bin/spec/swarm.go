@@ -2,6 +2,7 @@ package spec
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"os"
@@ -51,8 +52,15 @@ func (s *Swarm) New(path, alias string) error {
 Parse преобразует входящие данные из Vault в структуру модели.
 */
 func (s *Swarm) Parse(data map[string]any) {
+	switch v := data["replicas"].(type) {
+	case json.Number:
+		i, _ := strconv.Atoi(v.String())
+		s.Replicas = i
+	case string:
+		i, _ := strconv.Atoi(v)
+		s.Replicas = i
+	}
 	s.Tag = data["tag"].(string)
-	s.Replicas = data["replicas"].(int)
 }
 
 /*
