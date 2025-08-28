@@ -1,6 +1,3 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -15,12 +12,10 @@ import (
 var param string
 
 var getCmd = &cobra.Command{
-	Use:   "get [OPTIONS] [FLAGS]",
-	Short: "Get project information",
-	Example: `
-forge get <project> | forge get <project> -p <param>
-`,
-	Args: cobra.ExactArgs(1),
+	Use:     "get [OPTIONS] [FLAGS]",
+	Short:   "Get project information",
+	Example: "forge get <project> | forge get <project> -p <param>",
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		secrets, err := vault.API.Get(ctx, args[0])

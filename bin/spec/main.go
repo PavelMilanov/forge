@@ -20,13 +20,13 @@ type Spec interface {
 func NewSpec(mode string) (Spec, error) {
 	switch mode {
 	case config.SPECMODE["swarm"]:
-		spec := Swarm{}
+		var spec Swarm
 		return &spec, nil
 	case config.SPECMODE["compose"]:
-		spec := Compose{}
+		var spec Compose
 		return &spec, nil
 	case config.SPECMODE["kubernetes"]:
-		spec := Kubernetes{}
+		var spec Kubernetes
 		return &spec, nil
 	default:
 		return nil, errors.New("unknown mode")

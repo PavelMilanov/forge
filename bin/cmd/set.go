@@ -1,6 +1,3 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -16,12 +13,10 @@ var params []string
 
 // setCmd represents the set command
 var setCmd = &cobra.Command{
-	Use:   "set [OPTIONS] [FLAGS]",
-	Short: "Set values of the project",
-	Example: `
-forge set dev -p tags=latest -p replicas=3
-`,
-	Args: cobra.ExactArgs(1),
+	Use:     "set [OPTIONS] [FLAGS]",
+	Short:   "Set values of the project",
+	Example: "forge set dev -p tags=<string> -p replicas=<number>",
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(params) == 0 {
 			errors.SpecErrors(fmt.Errorf("no parameters detected"))

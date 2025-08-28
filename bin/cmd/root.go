@@ -18,7 +18,7 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:     "forge",
-	Short:   "cli-utility for managing ci/cd integration with docker infrastructure",
+	Short:   "cli-utility for managing ci/cd integration with infrastructure",
 	Version: config.VERSION,
 	Run: func(cmd *cobra.Command, args []string) {
 	},
@@ -44,9 +44,9 @@ func init() {
 }
 
 func defaultFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&projectFile, "file", "f", "", "path to project/to/configuration.yml")
-	cmd.Flags().StringVarP(&projectMode, "mode", "m", "compose", "project mode")
-	cmd.Flags().StringVarP(&projectAlias, "alias", "a", "", "unique project name")
+	cmd.Flags().StringVarP(&projectFile, "file", "f", "", "path to project/to/file.yml")
+	cmd.Flags().StringVarP(&projectMode, "mode", "m", "compose", "project mode: compose | swarm | kubernetes")
+	cmd.Flags().StringVarP(&projectAlias, "alias", "a", "", "unique alias for the project")
 	cmd.MarkFlagRequired("file")
 	cmd.MarkFlagRequired("alias")
 }

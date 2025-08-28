@@ -11,11 +11,9 @@ import (
 )
 
 var initCmd = &cobra.Command{
-	Use:   "init",
-	Short: "Project initialization",
-	Example: `
-forge init -f path/to/configFile.yaml -m compose -a dev
-`,
+	Use:     "init [FLAGS]",
+	Short:   "Project initialization",
+	Example: "forge init -f path/to/configFile.yaml -m compose -a <string>",
 
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
