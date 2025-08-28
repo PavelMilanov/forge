@@ -56,7 +56,7 @@ func TestComposeInit(t *testing.T) {
 	model := Compose{}
 	model.Init()
 	if model.Tag != "latest" {
-		t.Errorf("Неверная инициализация: %+v", model)
+		t.Fatalf("Неверная инициализация: %+v", model)
 	}
 }
 
@@ -65,7 +65,7 @@ func TestComposeParse(t *testing.T) {
 	model := Compose{}
 	model.Parse(data)
 	if model.Tag != "test" {
-		t.Errorf("Неверный парсинг: %s", model.Tag)
+		t.Fatalf("Неверный парсинг: %s", model.Tag)
 	}
 	t.Logf("%+v", model)
 }
@@ -73,17 +73,19 @@ func TestComposeParse(t *testing.T) {
 func TestComposeUpdate(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		model := Compose{}
+		model.Init()
 		input := []string{"tag=test"}
 		if error := model.Update(input); error != nil {
-			t.Errorf("Ошибка обновления: %v", error)
+			t.Fatalf("Ошибка обновления: %v", error)
 		}
 		if model.Tag != "test" {
-			t.Errorf("Неверное обновление: %s", model.Tag)
+			t.Fatalf("Неверное обновление: %s", model.Tag)
 		}
 	})
 	t.Run("not valid", func(t *testing.T) {
 		input := []string{"tag test"}
 		model := Compose{}
+		model.Init()
 		if err := model.Update(input); err != nil {
 			t.Log(err)
 		}
