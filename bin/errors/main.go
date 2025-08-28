@@ -20,9 +20,6 @@ func VaultErrors(err error) {
 	case strings.Contains(err.Error(), "Error making API request"):
 		fmt.Println("Vault API bad request. Check your vault token.")
 		os.Exit(1)
-	case err.Error() == "value not found":
-		fmt.Println("value not found")
-		os.Exit(1)
 	default:
 		fmt.Println(err)
 		os.Exit(1)

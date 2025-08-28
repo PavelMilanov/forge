@@ -6,7 +6,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/PavelMilanov/forge/errors"
 	"github.com/PavelMilanov/forge/spec"
@@ -25,8 +24,7 @@ forge set dev -p tags=latest -p replicas=3
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(params) == 0 {
-			fmt.Println("No parameters provided")
-			os.Exit(1)
+			errors.SpecErrors(fmt.Errorf("no parameters detected"))
 		}
 		ctx := context.Background()
 		secrets, err := vault.API.Get(ctx, args[0])
@@ -47,8 +45,7 @@ forge set dev -p tags=latest -p replicas=3
 		}
 		_, err = vault.API.Patch(ctx, args[0], map[string]any{"deploy": project})
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			errors.VaultErrors(err)
 		}
 		project.Print(args[0])
 

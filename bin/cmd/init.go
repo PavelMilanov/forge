@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"context"
-	"fmt"
-	"os"
 
+	"fmt"
+
+	"github.com/PavelMilanov/forge/errors"
 	"github.com/PavelMilanov/forge/spec"
 	"github.com/spf13/cobra"
 )
@@ -21,16 +22,14 @@ forge init -f path/to/configFile.yaml -m compose -a dev
 		ctx := context.Background()
 		project, err := spec.NewSpec(projectMode)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			errors.SpecErrors(err)
 		}
 		project.Init()
 		_, err = vault.API.Get(ctx, projectAlias) // ищет указанный проект в хранилище, если не найден, то создаем новый
 		if err != nil {
 			_, err = vault.API.Put(ctx, projectAlias, map[string]any{"deploy": project, "mode": projectMode})
 			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
+				errors.VaultErrors(err)
 			}
 			text := fmt.Sprintf("The project %s initialization was successful\nSee %s", projectAlias, vault.ENV.Vault.Url)
 			fmt.Println(text)
