@@ -1,5 +1,5 @@
 /*
-Copyright © 2025 NAME HERE <milamov71@icloud.com>
+Copyright © 2025, [Pavel Milanov]: forge cli utility
 */
 package main
 

@@ -12,7 +12,7 @@ import (
 )
 
 /*
-Compose - абстракция над docker compose спецификацией в файлах конфигурации.
+Compose	интерфейс взаимодействия с docker compose конфигурацией.
 */
 type Compose struct {
 	Tag string `json:"tag"`
@@ -29,6 +29,16 @@ func (c *Compose) Init() {
 
 /*
 Generate генерирует файл конфигурации на основе шаблона и данных модели.
+
+Params:
+
+	path - путь к шаблону
+	alias - алиас для идентификации файла
+
+Returns:
+
+	fileName - путь к сгенерированному файлу
+	err - ошибка, если она возникла
 */
 func (c *Compose) Generate(path, alias string) (string, error) {
 	tmpl, err := template.ParseFiles(path)
@@ -49,6 +59,10 @@ func (c *Compose) Generate(path, alias string) (string, error) {
 
 /*
 Parse преобразует входящие данные из Vault в структуру модели.
+
+Params:
+
+	data - входящие данные из Vault
 */
 func (c *Compose) Parse(data map[string]any) {
 	c.Tag = data["tag"].(string)
@@ -56,6 +70,14 @@ func (c *Compose) Parse(data map[string]any) {
 
 /*
 Update обновляет данные модели на основе входящих данных.
+
+Params:
+
+	data - входящие данные в формате key=value (флаги командной строки)
+
+Returns:
+
+	error - ошибка, если она возникла
 */
 func (c *Compose) Update(data []string) error {
 	if len(data) != 1 { // у спецификации compose 1 параметр
@@ -77,6 +99,10 @@ func (c *Compose) Update(data []string) error {
 
 /*
 Print форматированный вывод данных модели в консоль.
+
+Params:
+
+	alias - алиас проекта
 */
 func (c *Compose) Print(alias string) {
 	fmt.Printf(`%s

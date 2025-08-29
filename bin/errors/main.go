@@ -7,7 +7,7 @@ import (
 )
 
 /*
-VaultErrors - обрабатывает ошибки при работе с хранилищем секретов Vault.
+VaultErrors обработчик ошибок при работе с хранилищем секретов Vault.
 */
 func VaultErrors(err error) {
 	switch {
@@ -27,7 +27,7 @@ func VaultErrors(err error) {
 }
 
 /*
-SpecErrors - обрабатывает ошибки при работе с моделями инфраструктуры.
+SpecErrors обработчик ошибок при работе с моделями инфраструктуры.
 */
 func SpecErrors(err error) {
 	switch {

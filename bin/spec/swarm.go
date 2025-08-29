@@ -14,7 +14,7 @@ import (
 )
 
 /*
-Swarm - абстракция над docker swarm спецификацией в файлах конфигурации.
+Swarm интерфейс взаимодействия с docker swarm конфигурацией.
 */
 type Swarm struct {
 	Tag      string `json:"tag"`
@@ -35,6 +35,16 @@ func (s *Swarm) Init() {
 
 /*
 Generate генерирует файл конфигурации на основе шаблона и данных модели.
+
+Params:
+
+	path - путь к шаблону
+	alias - алиас для идентификации файла
+
+Returns:
+
+	fileName - путь к сгенерированному файлу
+	err - ошибка, если она возникла
 */
 func (s *Swarm) Generate(path, alias string) (string, error) {
 	tmpl, err := template.ParseFiles(path)
@@ -55,6 +65,10 @@ func (s *Swarm) Generate(path, alias string) (string, error) {
 
 /*
 Parse преобразует входящие данные из Vault в структуру модели.
+
+Params:
+
+	data - входящие данные из Vault
 */
 func (s *Swarm) Parse(data map[string]any) {
 	switch v := data["replicas"].(type) {
@@ -70,6 +84,14 @@ func (s *Swarm) Parse(data map[string]any) {
 
 /*
 Update обновляет данные модели на основе входящих данных.
+
+Params:
+
+	data - входящие данные в формате key=value (флаги командной строки)
+
+Returns:
+
+	error - ошибка, если она возникла
 */
 func (s *Swarm) Update(data []string) error {
 	if len(data) > 2 { // у спецификации swarm [1 или 2] параметра
@@ -98,6 +120,10 @@ func (s *Swarm) Update(data []string) error {
 
 /*
 Print форматированный вывод данных модели в консоль.
+
+Params:
+
+	alias - алиас проекта
 */
 func (s *Swarm) Print(alias string) {
 	fmt.Printf(`%s

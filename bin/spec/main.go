@@ -7,7 +7,7 @@ import (
 )
 
 /*
-NewSpec - спецификация данных инфраструктуры.
+NewSpec спецификация данных инфраструктуры.
 */
 type Spec interface {
 	Init()
@@ -17,6 +17,18 @@ type Spec interface {
 	Print(alias string)
 }
 
+/*
+NewSpec инициализирует спецификацию данных инфраструктуры в зависимости от модели конфигурации.
+
+Params:
+
+	mode - модель конфигурации
+
+Returns:
+
+	Spec - спецификация данных инфраструктуры
+	error - ошибка инициализации спецификации
+*/
 func NewSpec(mode string) (Spec, error) {
 	switch mode {
 	case config.SPECMODE["swarm"]:

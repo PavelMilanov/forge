@@ -11,7 +11,6 @@ import (
 
 var params []string
 
-// setCmd represents the set command
 var setCmd = &cobra.Command{
 	Use:     "set [OPTIONS] [FLAGS]",
 	Short:   "Set values of the project",

@@ -6,26 +6,40 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Env описывает конфигурацию приложения.
+/*
+Env описывает конфигурацию приложения.
+*/
 type Env struct {
 	Vault    vault
 	Registry registry
 }
 
-// server описывает конфигурацию сервера.
+/*
+vault описывает конфигурацию Hashicorp Vault.
+*/
 type vault struct {
 	Url   string `mapstructure:"url"`
 	Token string `mapstructure:"token"`
 	Path  string `mapstructure:"path"`
 }
 
-// registry описывает конфигурацию хранилища.
+/*
+registry описывает конфигурацию Docker Registry.
+*/
 type registry struct {
 	Url      string `mapstructure:"url"`
 	Login    string `mapstructure:"login"`
 	Password string `mapstructure:"password"`
 }
 
+/*
+NewEnv создает экземпляр Env из файла конфигурации.
+
+Returns
+
+	*Env - экземпляр Env
+	error - ошибка при создании экземпляра Env
+*/
 func NewEnv(path, file string) (*Env, error) {
 	env := Env{}
 	viper.SetConfigName(file) // имя файла без расширения
