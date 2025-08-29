@@ -14,7 +14,7 @@ var file string
 var deployCmd = &cobra.Command{
 	Use:     "deploy [OPTIONS] [FLAGS]",
 	Short:   "Generating a project configuration file",
-	Example: "forge deploy dev -f test.docker-compose.yml",
+	Example: "forge deploy <project> -f test.docker-compose.yml",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()

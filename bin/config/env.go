@@ -20,7 +20,6 @@ vault описывает конфигурацию Hashicorp Vault.
 type vault struct {
 	Url   string `mapstructure:"url"`
 	Token string `mapstructure:"token"`
-	Path  string `mapstructure:"path"`
 }
 
 /*
@@ -54,7 +53,7 @@ func NewEnv(path, file string) (*Env, error) {
 	if err != nil {
 		return nil, err
 	}
-	if env.Vault.Url == "" || env.Vault.Token == "" || env.Vault.Path == "" {
+	if env.Vault.Url == "" || env.Vault.Token == "" {
 		return nil, fmt.Errorf("invalid vault configuration")
 	}
 	return &env, nil

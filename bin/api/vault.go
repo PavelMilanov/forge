@@ -59,5 +59,5 @@ Set устанавливает токен Vault.
 */
 func (v *VaultAPI) Set() {
 	v.Client.SetToken(v.ENV.Vault.Token)
-	v.API = v.Client.KVv2(v.ENV.Vault.Path)
+	v.API = v.Client.KVv2(config.VAULT_PATH)
 }
