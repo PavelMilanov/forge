@@ -32,7 +32,7 @@ volumes:
 ```
 
 При инициализации конфигурационного файла в хранилище Vault появится секрет:
-![init_compose](docs/images/init_compose.png)
+![init_compose](/docs/images/init_compose.png)
 #### Docker swarm
 
 Спецификация позволяет отслежить **теги образов** и **количество реплик**. Пример:
@@ -76,7 +76,7 @@ volumes:
 ```
 
 При инициализации конфигурационного файла в хранилище Vault появится секрет:
-![init_swarm](docs/images/init_swarm.png)
+![init_swarm](/docs/images/init_swarm.png)
 #### Использование
 
 #####  init
