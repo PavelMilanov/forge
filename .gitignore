@@ -1,5 +1,6 @@
 forge
 .DS_Store
 .vagrant
-logs
+.obsidian
 var
+go.sum

@@ -2,43 +2,35 @@ package cmd
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"strings"
 
-	"github.com/PavelMilanov/forge/docker"
+	"fmt"
+
+	"github.com/PavelMilanov/forge/errors"
+	"github.com/PavelMilanov/forge/spec"
 	"github.com/spf13/cobra"
 )
 
 var initCmd = &cobra.Command{
-	Use:   "init",
-	Short: "Project initialization",
-	Example: `
-forge init -f docker/test/docker-compose.yaml -a backend
-`,
+	Use:     "init [FLAGS]",
+	Short:   "Project initialization",
+	Example: "forge init -f path/to/configFile.yaml -m compose -a <string>",
 
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		stack, err := docker.NewStack(dockerFile, dockerAlias)
+		project, err := spec.NewSpec(projectMode)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			errors.SpecErrors(err)
 		}
-		data := map[string]interface{}{}
-		for _, service := range stack.App.Services {
-			data[service.Name] = strings.Split(service.Image, ":")[1]
-		}
-		_, err = vault.KV.Get(ctx, dockerAlias)
+		project.Init()
+		_, err = vault.API.Get(ctx, projectAlias) // ищет указанный проект в хранилище, если не найден, то создаем новый
 		if err != nil {
-			_, err = vault.KV.Put(ctx, dockerAlias, data)
+			_, err = vault.API.Put(ctx, projectAlias, map[string]any{"deploy": project, "mode": projectMode})
 			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
+				errors.VaultErrors(err)
 			}
-			text := fmt.Sprintf("The project %s initialization was successful\nSee %s", dockerAlias, vault.ENV.Vault.Url)
+			text := fmt.Sprintf("The project %s initialization was successful\nSee %s", projectAlias, vault.ENV.Vault.Url)
 			fmt.Println(text)
-			os.Exit(0)
 		}
 		fmt.Println("The project already initialized")
 	},
@@ -46,5 +38,5 @@ forge init -f docker/test/docker-compose.yaml -a backend
 
 func init() {
 	rootCmd.AddCommand(initCmd)
-	addDefaultFlags(initCmd)
+	defaultFlags(initCmd)
 }

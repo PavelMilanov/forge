@@ -3,55 +3,43 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
-	"github.com/PavelMilanov/forge/utils"
+	"github.com/PavelMilanov/forge/errors"
+	"github.com/PavelMilanov/forge/spec"
 	"github.com/spf13/cobra"
 )
 
-var deployCmd = &cobra.Command{
-	Use:   "deploy",
-	Short: "Generating a project configuration file",
-	Example: `
-forge deploy -f test.docker-compose.yml -a stage
-<test.docker-compose.yml>
-services:
-  alpine:
-    image: alpine:{{ tag "alpine" }}
-    container_name: alpine
-    restart: unless-stopped
+var file string
 
-<stage-stack.yml>
-services:
-  alpine:
-    image: alpine:latest
-    container_name: alpine
-    restart: unless-stopped
-`,
-	Args: cobra.NoArgs,
+var deployCmd = &cobra.Command{
+	Use:     "deploy [OPTIONS] [FLAGS]",
+	Short:   "Generating a project configuration file",
+	Example: "forge deploy <project> -f test.docker-compose.yml",
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		secrets, err := vault.KV.Get(ctx, dockerAlias)
+		secrets, err := vault.API.Get(ctx, args[0])
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			errors.VaultErrors(err)
 		}
-		tags := map[string]string{}
-		for key, value := range secrets.Data {
-			tags[key] = value.(string)
+		value, exists := secrets.Data["deploy"]
+		if !exists {
+			errors.VaultErrors(fmt.Errorf("value not found"))
 		}
-		file, err := utils.GenerateAppConfig(dockerFile, dockerAlias, tags)
+		project, err := spec.NewSpec(secrets.Data["mode"].(string))
 		if err != nil {
-			fmt.Println("Error generating config:", err)
-			os.Exit(1)
+			errors.SpecErrors(err)
 		}
-		text := fmt.Sprintf("Project file %s generated", file)
-		fmt.Println(text)
-		os.Exit(0)
+		project.Parse(value.(map[string]any))
+		config, err := project.Generate(file, args[0])
+		if err != nil {
+			errors.SpecErrors(err)
+		}
+		fmt.Printf("File generated: %s\n", config)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(deployCmd)
-	addDefaultFlags(deployCmd)
+	deployCmd.Flags().StringVarP(&file, "file", "f", "", "path/to/file")
 }

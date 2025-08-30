@@ -1,0 +1,83 @@
+name: Release forge
+
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - ".github/**"
+      - "vagrant/**"
+      - "Makefile"
+      - "Vagrantfile"
+      - "docs/**"
+      - ".gitignore"
+    branches:
+      - main
+
+ENV:
+  GO_VERSION: 1.25
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Setup Dependencies
+        run: cd bin && go mod tidy
+
+      - name: Run Tests
+        run: cd bin && go test -v
+
+  build-linux:
+    runs-on: ubuntu-latest
+    needs: [test]
+    env:
+      GOPATH: ${{ runner.temp }}/go
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install dependencies
+        run: cd bin && go mod download
+
+      - name: Get version from git tags
+        id: get_version
+        run: echo "::set-output name=version::$(git describe --tags --always)"
+
+      - name: Compile application
+        env:
+          VERSION: ${{ steps.get_version.outputs.version }}
+        run: cd bin && make build version=${VERSION}
+
+      - name: Archive binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-binary
+          path: $GOPATH/bin/forge
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [build-linux]
+    steps:
+      - name: Download Built Binary
+        uses: actions/download-artifact@v4
+        with:
+          name: build-binary
+          path: binaries
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: binaries/forge

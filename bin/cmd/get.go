@@ -1,45 +1,45 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"context"
 	"fmt"
-	"os"
 
+	"github.com/PavelMilanov/forge/errors"
+	"github.com/PavelMilanov/forge/spec"
 	"github.com/spf13/cobra"
 )
 
-// getCmd represents the get command
+var param string
+
 var getCmd = &cobra.Command{
-	Use:   "get",
-	Short: "Get version of the specified service",
-	Example: `
-forge get -a stage -s alpine
-3.21
-`,
-	Args: cobra.NoArgs,
+	Use:     "get [OPTIONS] [FLAGS]",
+	Short:   "Get project information",
+	Example: "forge get <project> | forge get <project> -p <param>",
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		secrets, err := vault.KV.Get(ctx, dockerAlias)
+		secrets, err := vault.API.Get(ctx, args[0])
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			errors.VaultErrors(err)
 		}
-		if dockerService != "" {
-			value, exists := secrets.Data[dockerService]
-			if !exists {
-				fmt.Println("Service not found")
-				os.Exit(1)
+		value, exists := secrets.Data["deploy"]
+		if !exists {
+			errors.VaultErrors(fmt.Errorf("value not found"))
+		}
+		if param != "" {
+			fmt.Println(value.(map[string]any)[param])
+		} else {
+			project, err := spec.NewSpec(secrets.Data["mode"].(string))
+			if err != nil {
+				errors.SpecErrors(err)
 			}
-			fmt.Println(value.(string))
-			os.Exit(0)
+			project.Parse(value.(map[string]any))
+			project.Print(args[0])
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(getCmd)
-	addAliasFlags(getCmd)
+	getCmd.Flags().StringVarP(&param, "param", "p", "", "project parameter")
 }
