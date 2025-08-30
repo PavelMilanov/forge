@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-binary
-          path: $GOPATH/bin/forge
+          path: $GOPATH/bin/linux_amd64/forge
 
   release:
     runs-on: ubuntu-latest
