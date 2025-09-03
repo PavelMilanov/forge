@@ -99,15 +99,31 @@ Returns:
 	error - ошибка, если она возникла
 */
 func (s *Swarm) Update(data []string) error {
-	if len(data) > 2 { // у спецификации swarm [1 или 2] параметра
-		return fmt.Errorf("1 or 2 parameters expected")
+	check := func(data []string) error {
+		for _, param := range data {
+			value := strings.Split(param, "=")
+			if len(value) != 2 {
+				return fmt.Errorf("Format is incorrect. Try: forge set <project> -p param=value")
+			}
+			found := false
+			for _, flag := range config.SWARMPARAMS {
+				if value[0] == flag {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return fmt.Errorf("Unknown parameter: %s", value[0])
+			}
+		}
+		return nil
+	}
+	if err := check(data); err != nil {
+		return err
 	}
 	buf := make(map[string]string)
 	for _, param := range data {
 		value := strings.Split(param, "=")
-		if len(value) != 2 {
-			return fmt.Errorf("Format is incorrect. Try: forge set <project> -p param=value")
-		}
 		buf[value[0]] = value[1]
 	}
 	if len(buf["image"]) > 0 {
