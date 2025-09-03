@@ -17,6 +17,7 @@ import (
 Swarm интерфейс взаимодействия с docker swarm конфигурацией.
 */
 type Swarm struct {
+	Image    string `json:"image,omitempty"`
 	Tag      string `json:"tag"`
 	Replicas int    `json:"replicas"`
 }
@@ -25,6 +26,9 @@ type Swarm struct {
 Init инициализирует модель с параметрами по умолчанию.
 */
 func (s *Swarm) Init() {
+	if s.Image == "" {
+		s.Image = "image"
+	}
 	if s.Tag == "" {
 		s.Tag = "latest"
 	}
@@ -79,6 +83,7 @@ func (s *Swarm) Parse(data map[string]any) {
 		i, _ := strconv.Atoi(v)
 		s.Replicas = i
 	}
+	s.Image = data["image"].(string)
 	s.Tag = data["tag"].(string)
 }
 
@@ -105,6 +110,9 @@ func (s *Swarm) Update(data []string) error {
 		}
 		buf[value[0]] = value[1]
 	}
+	if len(buf["image"]) > 0 {
+		s.Image = buf["image"]
+	}
 	if len(buf["tag"]) > 0 {
 		s.Tag = buf["tag"]
 	}
@@ -127,7 +135,8 @@ Params:
 */
 func (s *Swarm) Print(alias string) {
 	fmt.Printf(`%s
+  image: %s
   tag: %s
   replicas: %d
-`, alias, s.Tag, s.Replicas)
+`, alias, s.Image, s.Tag, s.Replicas)
 }

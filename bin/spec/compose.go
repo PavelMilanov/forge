@@ -15,13 +15,17 @@ import (
 Compose	интерфейс взаимодействия с docker compose конфигурацией.
 */
 type Compose struct {
-	Tag string `json:"tag"`
+	Image string `json:"image,omitempty"`
+	Tag   string `json:"tag"`
 }
 
 /*
 Init инициализирует модель с параметрами по умолчанию.
 */
 func (c *Compose) Init() {
+	if c.Image == "" {
+		c.Image = "image"
+	}
 	if c.Tag == "" {
 		c.Tag = "latest"
 	}
@@ -65,6 +69,7 @@ Params:
 	data - входящие данные из Vault
 */
 func (c *Compose) Parse(data map[string]any) {
+	c.Image = data["image"].(string)
 	c.Tag = data["tag"].(string)
 }
 
@@ -94,6 +99,9 @@ func (c *Compose) Update(data []string) error {
 	if len(buf["tag"]) > 0 {
 		c.Tag = buf["tag"]
 	}
+	if len(buf["image"]) > 0 {
+		c.Image = buf["image"]
+	}
 	return nil
 }
 
@@ -106,6 +114,7 @@ Params:
 */
 func (c *Compose) Print(alias string) {
 	fmt.Printf(`%s
+  image: %s
   tag: %s
-`, alias, c.Tag)
+`, alias, c.Image, c.Tag)
 }
