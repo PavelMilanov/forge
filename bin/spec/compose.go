@@ -15,7 +15,7 @@ import (
 Compose	интерфейс взаимодействия с docker compose конфигурацией.
 */
 type Compose struct {
-	Image string `json:"image,omitempty"`
+	Image string `json:"image"`
 	Tag   string `json:"tag"`
 }
 

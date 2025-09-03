@@ -17,7 +17,7 @@ import (
 Swarm интерфейс взаимодействия с docker swarm конфигурацией.
 */
 type Swarm struct {
-	Image    string `json:"image,omitempty"`
+	Image    string `json:"image"`
 	Tag      string `json:"tag"`
 	Replicas int    `json:"replicas"`
 }
