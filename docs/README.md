@@ -12,12 +12,12 @@ vault:
 
 #### Docker compose
 
-Спецификация позволяет отслеживать **теги образов**. Пример:
+Спецификация позволяет отслеживать **образ и его тег**. Пример:
 ```yaml
 docker-compose.yaml
 services:
   registry:
-    image: rosomilanov/container-registry:{{.Tag}}
+    image: {{.Image}}:{{.Tag}}
     container_name: registry
     restart: unless-stopped
     ports:
@@ -34,12 +34,12 @@ volumes:
 ![init_compose](/docs/images/init_compose.png)
 #### Docker swarm
 
-Спецификация позволяет отслежить **теги образов** и **количество реплик**. Пример:
+Спецификация позволяет отслеживать **названия образа и его тег** и **количество реплик**. Пример:
 ```yaml
 docker-stack.yaml
 services:
   registry:
-    image: rosomilanov/container-registry:{{.Tag}}
+    image: {{.Image}}:{{.Tag}}
     deploy:
       resources:
         limits:
@@ -87,9 +87,9 @@ forge init -f <file> -m compose -a <string>
 
 флаги:
 - `-f` путь до файла конфигурации;
--  `-m` спецификация файла. По-умолчанию `compose`;
+- `-m` спецификация файла. По-умолчанию `compose`;
 	Разрешенные значения: `compose` | `swarm`
--  `-a` название секрета в Vault / название проекта.
+- `-a` название секрета в Vault / название проекта.
 
 пример команды:
 ```bash
@@ -98,7 +98,7 @@ forge init -f /path/to/template.yaml -m compose -a dev
 
 ##### set
 ```bash
-forge set <project> -p tags=<string> -p replicas=<number>
+forge set <project> -p tag=<string> -p replicas=<number>
 ```
 
 Обновляет параметры модели указанного проекта согласно спецификации.
@@ -111,7 +111,7 @@ forge set <project> -p tags=<string> -p replicas=<number>
 
 пример команды:
 ```bash
-forge set dev -p tags=alpine
+forge set dev -p tag=alpine
 ```
 >Для спецификации docker swarm можно обновлять один произвольный параметр или указать сразу два.
 
@@ -134,7 +134,7 @@ forge get <project> -p <param>
 
 пример команды:
 ```bash
-forge get dev -p tags
+forge get dev -p tag
 ```
 > При вызове команды без флагов в консоль будет выведен форматированный вывод данных согласно спецификации.
 
