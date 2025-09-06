@@ -12,3 +12,19 @@ var SPECMODE = map[string]string{
 	"compose":    "compose",
 	"kubernetes": "kubernetes",
 }
+
+var COMPOSEPARAMS = [2]string{
+	"image",
+	"tag",
+}
+
+var SWARMPARAMS = [3]string{
+	"image",
+	"tag",
+	"replicas",
+}
+
+var KUBERNETESPARAMS = [2]string{
+	"image",
+	"tag",
+}

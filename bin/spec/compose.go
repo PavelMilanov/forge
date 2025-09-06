@@ -15,13 +15,17 @@ import (
 Compose	интерфейс взаимодействия с docker compose конфигурацией.
 */
 type Compose struct {
-	Tag string `json:"tag"`
+	Image string `json:"image"`
+	Tag   string `json:"tag"`
 }
 
 /*
 Init инициализирует модель с параметрами по умолчанию.
 */
 func (c *Compose) Init() {
+	if c.Image == "" {
+		c.Image = "image"
+	}
 	if c.Tag == "" {
 		c.Tag = "latest"
 	}
@@ -65,6 +69,7 @@ Params:
 	data - входящие данные из Vault
 */
 func (c *Compose) Parse(data map[string]any) {
+	c.Image = data["image"].(string)
 	c.Tag = data["tag"].(string)
 }
 
@@ -80,19 +85,39 @@ Returns:
 	error - ошибка, если она возникла
 */
 func (c *Compose) Update(data []string) error {
-	if len(data) != 1 { // у спецификации compose 1 параметр
-		return fmt.Errorf("1 parameter expected")
+	check := func(data []string) error {
+		for _, param := range data {
+			value := strings.Split(param, "=")
+			if len(value) != 2 {
+				return fmt.Errorf("Format is incorrect. Try: forge set <project> -p param=value")
+			}
+			found := false
+			for _, flag := range config.COMPOSEPARAMS {
+				if value[0] == flag {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return fmt.Errorf("Unknown parameter: %s", value[0])
+			}
+		}
+		return nil
+	}
+
+	if err := check(data); err != nil {
+		return err
 	}
 	buf := make(map[string]string)
 	for _, param := range data {
 		value := strings.Split(param, "=")
-		if len(value) != 2 {
-			return fmt.Errorf("Format is incorrect. Try: forge set <project> -p param=value")
-		}
 		buf[value[0]] = value[1]
 	}
 	if len(buf["tag"]) > 0 {
 		c.Tag = buf["tag"]
+	}
+	if len(buf["image"]) > 0 {
+		c.Image = buf["image"]
 	}
 	return nil
 }
@@ -106,6 +131,7 @@ Params:
 */
 func (c *Compose) Print(alias string) {
 	fmt.Printf(`%s
+  image: %s
   tag: %s
-`, alias, c.Tag)
+`, alias, c.Image, c.Tag)
 }

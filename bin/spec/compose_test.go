@@ -70,7 +70,7 @@ func TestComposeInit(t *testing.T) {
 }
 
 func TestComposeParse(t *testing.T) {
-	data := map[string]any{"tag": "test"}
+	data := map[string]any{"tag": "test", "image": "image"}
 	model := Compose{}
 	model.Parse(data)
 	if model.Tag != "test" {
@@ -93,6 +93,14 @@ func TestComposeUpdate(t *testing.T) {
 	})
 	t.Run("not valid", func(t *testing.T) {
 		input := []string{"tag test"}
+		model := Compose{}
+		model.Init()
+		if err := model.Update(input); err != nil {
+			t.Log(err)
+		}
+	})
+	t.Run("not valid2", func(t *testing.T) {
+		input := []string{"tags=test"}
 		model := Compose{}
 		model.Init()
 		if err := model.Update(input); err != nil {

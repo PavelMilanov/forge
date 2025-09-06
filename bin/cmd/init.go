@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"os"
 
 	"fmt"
 
@@ -31,6 +32,7 @@ var initCmd = &cobra.Command{
 			}
 			text := fmt.Sprintf("The project %s initialization was successful\nSee %s", projectAlias, vault.ENV.Vault.Url)
 			fmt.Println(text)
+			os.Exit(0)
 		}
 		fmt.Println("The project already initialized")
 	},

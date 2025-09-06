@@ -14,7 +14,7 @@ var params []string
 var setCmd = &cobra.Command{
 	Use:     "set [OPTIONS] [FLAGS]",
 	Short:   "Set values of the project",
-	Example: "forge set <project> -p tags=<string> -p replicas=<number>",
+	Example: "forge set <project> -p <key>=<value>",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(params) == 0 {

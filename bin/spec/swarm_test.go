@@ -132,4 +132,12 @@ func TestSwarmUpdate(t *testing.T) {
 		}
 
 	})
+	t.Run("not valid2", func(t *testing.T) {
+		input := []string{"tags=test"}
+		model := Compose{}
+		if err := model.Update(input); err != nil {
+			t.Log(err)
+		}
+
+	})
 }
