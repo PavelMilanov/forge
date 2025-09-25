@@ -17,7 +17,7 @@ vault:
 docker-compose.yaml
 services:
   registry:
-    image: rosomilanov/container-registry:{{.Tag}}
+    image: {{.Image}}:{{.Tag}}
     container_name: registry
     restart: unless-stopped
     ports:
@@ -39,7 +39,7 @@ volumes:
 docker-stack.yaml
 services:
   registry:
-    image: rosomilanov/container-registry:{{.Tag}}
+    image: {{.Image}}:{{.Tag}}
     deploy:
       resources:
         limits:
@@ -98,7 +98,7 @@ forge init -f /path/to/template.yaml -m compose -a dev
 
 ##### set
 ```bash
-forge set <project> -p tags=<string> -p replicas=<number>
+forge set <project> -p tag=<string> -p replicas=<number>
 ```
 
 Обновляет параметры модели указанного проекта согласно спецификации.
@@ -111,7 +111,7 @@ forge set <project> -p tags=<string> -p replicas=<number>
 
 пример команды:
 ```bash
-forge set dev -p tags=alpine
+forge set dev -p tag=alpine
 ```
 >Для спецификации docker swarm можно обновлять один произвольный параметр или указать сразу два.
 
