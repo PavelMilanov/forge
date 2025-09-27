@@ -7,11 +7,13 @@ import (
 )
 
 func TestNewClient(t *testing.T) {
-	env, err := config.NewEnv(config.CONFIG_PATH, config.CONFIG_FILE)
+	addr := "localhost"
+	user := "vagrant"
+	env, err := config.NewEnv("../var/config", "forge.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
-	c, err := NewClient(env)
+	c, err := NewClient(env, user, addr)
 	if err != nil {
 		t.Fatal(err)
 	}

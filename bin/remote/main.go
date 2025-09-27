@@ -17,7 +17,7 @@ type Remote struct {
 	File   *sftp.Client
 }
 
-func NewClient(env *config.Env) (*Remote, error) {
+func NewClient(env *config.Env, user, addr string) (*Remote, error) {
 	knowHostsPath := env.SSH.KnownHosts
 	key, err := os.ReadFile(env.SSH.PrivateKey)
 	if err != nil {
@@ -33,14 +33,14 @@ func NewClient(env *config.Env) (*Remote, error) {
 		return nil, fmt.Errorf("unable to load known_hosts: %w", err)
 	}
 	config := &ssh.ClientConfig{
-		User: "administrator",
+		User: user,
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(signer),
 		},
 		HostKeyCallback: hostKeyCallback,
 	}
 
-	sshClient, err := ssh.Dial("tcp", "82.148.18.110:22", config)
+	sshClient, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", addr, 22), config)
 	if err != nil {
 		sshClient.Close()
 		return nil, fmt.Errorf("unable to connect: %v", err)
