@@ -13,7 +13,7 @@ on:
     branches:
       - main
 
-ENV:
+env:
   GO_VERSION: 1.25
 
 jobs:
@@ -53,7 +53,7 @@ jobs:
 
       - name: Get version from git tags
         id: get_version
-        run: echo "::set-output name=version::$(git describe --tags --always)"
+        run: echo "version=$(git describe --tags --always)" >> $GITHUB_OUTPUT
 
       - name: Compile application
         env:
