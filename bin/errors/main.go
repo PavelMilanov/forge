@@ -39,3 +39,14 @@ func SpecErrors(err error) {
 		os.Exit(1)
 	}
 }
+
+/*
+RemoteErrors обработчик ошибок при работе с удаленной инфраструктурой.
+*/
+func RemoteErrors(err error) {
+	switch {
+	default:
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}

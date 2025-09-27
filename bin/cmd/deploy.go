@@ -3,9 +3,11 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 
+	"github.com/PavelMilanov/forge/config"
 	"github.com/PavelMilanov/forge/errors"
-	"github.com/PavelMilanov/forge/spec"
+	"github.com/PavelMilanov/forge/remote"
 	"github.com/spf13/cobra"
 )
 
@@ -13,8 +15,8 @@ var file string
 
 var deployCmd = &cobra.Command{
 	Use:     "deploy [OPTIONS] [FLAGS]",
-	Short:   "Generating a project configuration file",
-	Example: "forge deploy <project> -f test.docker-compose.yml",
+	Short:   "Deploy project configuration file to remote host",
+	Example: "forge deploy <project> -f <path/to/deployment.yml>",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
@@ -22,24 +24,27 @@ var deployCmd = &cobra.Command{
 		if err != nil {
 			errors.VaultErrors(err)
 		}
-		value, exists := secrets.Data["deploy"]
+		value, exists := secrets.Data["host"]
 		if !exists {
-			errors.VaultErrors(fmt.Errorf("value not found"))
+			errors.VaultErrors(fmt.Errorf("host not found"))
 		}
-		project, err := spec.NewSpec(secrets.Data["mode"].(string))
+		host := remote.NewHost()
+		host.Parse(value.(map[string]any))
+		ssh, err := remote.NewSSH(vault.ENV, host.Addr)
 		if err != nil {
-			errors.SpecErrors(err)
+			errors.RemoteErrors(err)
 		}
-		project.Parse(value.(map[string]any))
-		config, err := project.Generate(file, args[0])
-		if err != nil {
-			errors.SpecErrors(err)
+		defer ssh.Close()
+		localFile := filepath.Join(config.CONFIG_PATH, "config.yaml")
+		remoteFile := filepath.Join(host.Path, "config.yaml")
+		if err := ssh.Upload(localFile, remoteFile); err != nil {
+			errors.RemoteErrors(err)
 		}
-		fmt.Printf("File generated: %s\n", config)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(deployCmd)
-	deployCmd.Flags().StringVarP(&file, "file", "f", "", "path/to/file")
+	generateCmd.Flags().StringVarP(&file, "file", "f", "", "path/to/deployment.yml")
+	generateCmd.MarkFlagRequired("file")
 }

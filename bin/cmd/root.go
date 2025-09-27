@@ -10,10 +10,12 @@ import (
 )
 
 var (
-	projectFile  string
-	projectMode  string
-	projectAlias string
-	vault        *api.VaultAPI
+	projectTemplate string
+	projectMode     string
+	projectAlias    string
+	vault           *api.VaultAPI
+	hostPath        string
+	hostAddr        string
 )
 
 var rootCmd = &cobra.Command{
@@ -44,9 +46,12 @@ func init() {
 }
 
 func defaultFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&projectFile, "file", "f", "", "path to project/to/file.yml")
+	cmd.Flags().StringVarP(&projectTemplate, "file", "f", "", "path to project/to/template.yml")
 	cmd.Flags().StringVarP(&projectMode, "mode", "m", "compose", "project mode: compose | swarm | kubernetes")
 	cmd.Flags().StringVarP(&projectAlias, "alias", "a", "", "unique alias for the project")
+	cmd.Flags().StringVarP(&hostPath, "path", "p", "/var/app", "path to remote host project directory")
+	cmd.Flags().StringVarP(&hostAddr, "remote", "r", "", "remote host address")
 	cmd.MarkFlagRequired("file")
 	cmd.MarkFlagRequired("alias")
+	cmd.MarkFlagRequired("remote")
 }
