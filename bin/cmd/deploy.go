@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/PavelMilanov/forge/config"
 	"github.com/PavelMilanov/forge/errors"
 	"github.com/PavelMilanov/forge/remote"
 	"github.com/spf13/cobra"
@@ -35,9 +34,9 @@ var deployCmd = &cobra.Command{
 			errors.RemoteErrors(err)
 		}
 		defer ssh.Close()
-		localFile := filepath.Join(config.CONFIG_PATH, "config.yaml")
+		// localFile := filepath.Join(config.CONFIG_PATH, "config.yaml")
 		remoteFile := filepath.Join(host.Path, "config.yaml")
-		if err := ssh.Upload(localFile, remoteFile); err != nil {
+		if err := ssh.Upload(file, remoteFile); err != nil {
 			errors.RemoteErrors(err)
 		}
 	},
