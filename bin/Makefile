@@ -13,4 +13,4 @@ build:
 	-ldflags="-s -w -X 'github.com/PavelMilanov/forge/config.CONFIG_PATH=/var/forge' -X 'github.com/PavelMilanov/forge/config.VERSION=${version}'"
 
 token:
-    docker exec -e VAULT_TOKEN='root' vault vault token create --renewable=true -policy=forge
+	docker exec -e VAULT_TOKEN='root' vault vault token create --renewable=true -policy=forge
