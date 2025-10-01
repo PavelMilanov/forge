@@ -14,7 +14,7 @@ var template string
 var generateCmd = &cobra.Command{
 	Use:     "generate [OPTIONS] [FLAGS]",
 	Short:   "Generating a project configuration file",
-	Example: "forge generate <project> -f <absolute/path/to/template.yml>",
+	Example: "forge generate <project> -t <absolute/path/to/template.yml>",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
@@ -41,6 +41,6 @@ var generateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
-	generateCmd.Flags().StringVarP(&template, "file", "f", "", "path/to/template.yml")
-	generateCmd.MarkFlagRequired("file")
+	generateCmd.Flags().StringVarP(&template, "template", "t", "", "path/to/template.yml")
+	generateCmd.MarkFlagRequired("template")
 }
