@@ -1,4 +1,4 @@
-package cmd
+package deploy
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/PavelMilanov/forge/errors"
-	"github.com/PavelMilanov/forge/remote"
 	"github.com/PavelMilanov/forge/spec"
 	"github.com/spf13/cobra"
 )
@@ -15,7 +14,7 @@ import (
 var initCmd = &cobra.Command{
 	Use:     "init [FLAGS]",
 	Short:   "Project initialization",
-	Example: "forge init -f path/to/template.yaml -m compose -a <string> -p <absolute/path/to/project> -r <ipaddress>",
+	Example: "forge init -f path/to/template.yaml -m compose -a <string>",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
@@ -24,13 +23,13 @@ var initCmd = &cobra.Command{
 			errors.SpecErrors(err)
 		}
 		project.Init()
-		host := remote.Host{Addr: hostAddr, Path: hostPath}
+		// host := remote.Host{Addr: hostAddr, Path: hostPath}
 		_, err = vault.API.Get(ctx, projectAlias) // ищет указанный проект в хранилище, если не найден, то создаем новый
 		if err != nil {
 			_, err = vault.API.Put(ctx, projectAlias, map[string]any{
 				"deploy": project,
 				"mode":   projectMode,
-				"host":   host,
+				// "host":   host,
 			})
 			if err != nil {
 				errors.VaultErrors(err)
@@ -44,6 +43,6 @@ var initCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(initCmd)
+	DeployCmd.AddCommand(initCmd)
 	defaultFlags(initCmd)
 }

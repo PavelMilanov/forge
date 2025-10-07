@@ -1,4 +1,4 @@
-package cmd
+package deploy
 
 import (
 	"context"
@@ -8,8 +8,6 @@ import (
 	"github.com/PavelMilanov/forge/spec"
 	"github.com/spf13/cobra"
 )
-
-var template string
 
 var generateCmd = &cobra.Command{
 	Use:     "generate [OPTIONS] [FLAGS]",
@@ -40,7 +38,7 @@ var generateCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(generateCmd)
+	DeployCmd.AddCommand(generateCmd)
 	generateCmd.Flags().StringVarP(&template, "template", "t", "", "path/to/template.yml")
 	generateCmd.MarkFlagRequired("template")
 }

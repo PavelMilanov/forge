@@ -1,4 +1,4 @@
-package cmd
+package deploy
 
 import (
 	"context"
@@ -40,6 +40,6 @@ var getCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(getCmd)
+	DeployCmd.AddCommand(getCmd)
 	getCmd.Flags().StringVarP(&param, "param", "p", "", "project parameter")
 }

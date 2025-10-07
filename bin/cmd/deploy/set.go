@@ -1,4 +1,4 @@
-package cmd
+package deploy
 
 import (
 	"context"
@@ -47,6 +47,6 @@ var setCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(setCmd)
+	DeployCmd.AddCommand(setCmd)
 	setCmd.Flags().StringSliceVarP(&params, "param", "p", []string{}, "project parameter")
 }
