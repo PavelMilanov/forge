@@ -11,10 +11,7 @@ var (
 	projectMode     string
 	projectAlias    string
 	vault           *api.VaultAPI
-	// hostPath        string
-	// hostAddr        string
-	file     string
-	template string
+	template        string
 )
 
 var DeployCmd = &cobra.Command{
@@ -57,9 +54,7 @@ func init() {
 	if err := vault.RenewToken(); err != nil {
 		errors.VaultErrors(err)
 	}
-	// rootCmd.AddCommand(deployCmd)
-	// generateCmd.Flags().StringVarP(&file, "file", "f", "", "path/to/deployment.yml")
-	// generateCmd.MarkFlagRequired("file")
+
 }
 
 func defaultFlags(cmd *cobra.Command) {

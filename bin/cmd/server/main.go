@@ -1,7 +1,15 @@
 package server
 
 import (
+	"os"
+
+	"github.com/PavelMilanov/forge/config"
+	"github.com/PavelMilanov/forge/errors"
 	"github.com/spf13/cobra"
+)
+
+var (
+	env *config.Env
 )
 
 var ServerCmd = &cobra.Command{
@@ -35,27 +43,11 @@ var ServerCmd = &cobra.Command{
 }
 
 func init() {
-	// var err error
-	// vault, err = api.NewVaultClient()
-	// if err != nil {
-	// 	errors.VaultErrors(err)
-	// }
-	// vault.Set()
-	// if err := vault.RenewToken(); err != nil {
-	// 	errors.VaultErrors(err)
-	// }
-	// rootCmd.AddCommand(deployCmd)
-	// generateCmd.Flags().StringVarP(&file, "file", "f", "", "path/to/deployment.yml")
-	// generateCmd.MarkFlagRequired("file")
-}
+	var err error
+	env, err = config.NewEnv(config.CONFIG_PATH, config.CONFIG_FILE)
+	if err != nil {
+		errors.RemoteErrors(err)
+		os.Exit(1)
+	}
 
-// func defaultFlags(cmd *cobra.Command) {
-// 	cmd.Flags().StringVarP(&projectTemplate, "file", "f", "", "path to project/to/template.yml")
-// 	cmd.Flags().StringVarP(&projectMode, "mode", "m", "compose", "project mode: compose | swarm | kubernetes")
-// 	cmd.Flags().StringVarP(&projectAlias, "alias", "a", "", "unique alias for the project")
-// 	// cmd.Flags().StringVarP(&hostPath, "path", "p", "/var/app", "path to remote host project directory")
-// 	// cmd.Flags().StringVarP(&hostAddr, "remote", "r", "", "remote host address")
-// 	cmd.MarkFlagRequired("file")
-// 	cmd.MarkFlagRequired("alias")
-// 	// cmd.MarkFlagRequired("remote")
-// }
+}
