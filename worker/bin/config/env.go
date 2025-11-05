@@ -37,7 +37,11 @@ ssh описывает конфигурацию SSH.
 */
 type ssh struct {
 	PrivateKey string `mapstructure:"private_key"`
-	User       string `mapstructure:"user"`
+	Servers    []struct {
+		Host   string `mapstructure:"host"`
+		User   string `mapstructure:"user"`
+		Server string `mapstructure:"server"`
+	} `mapstructure:"servers"`
 }
 
 /*
