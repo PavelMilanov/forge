@@ -50,7 +50,7 @@ func TestSwarmGenerate(t *testing.T) {
 		if err := os.WriteFile(tmpfile, []byte(tmpl), 0644); err != nil {
 			t.Fatalf("Ошибка записи файла: %v", err)
 		}
-		config, err := swarm.Generate(tmpfile, fmt.Sprintf("%d", idx))
+		config, err := swarm.Generate(tmpfile)
 		if err != nil {
 			t.Fatalf("Ошибка генерации: %v", err)
 		}

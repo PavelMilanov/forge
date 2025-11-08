@@ -41,7 +41,7 @@ var setCmd = &cobra.Command{
 		if err != nil {
 			errors.VaultErrors(err)
 		}
-		project.Print(args[0])
+		project.Print()
 
 	},
 }
