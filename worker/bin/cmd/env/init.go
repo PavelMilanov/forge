@@ -1,4 +1,4 @@
-package deploy
+package env
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 var initCmd = &cobra.Command{
 	Use:     "init [FLAGS]",
 	Short:   "Project initialization",
-	Example: "forge deploy init -f path/to/template.yaml -m compose -a <string>",
+	Example: "forge env init -f path/to/template.yaml -m compose -a <string>",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
@@ -46,6 +46,6 @@ var initCmd = &cobra.Command{
 }
 
 func init() {
-	DeployCmd.AddCommand(initCmd)
+	EnvCmd.AddCommand(initCmd)
 	defaultFlags(initCmd)
 }

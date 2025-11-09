@@ -1,4 +1,4 @@
-package deploy
+package env
 
 import (
 	"context"
@@ -14,7 +14,7 @@ var params []string
 var setCmd = &cobra.Command{
 	Use:     "set [OPTIONS] [FLAGS]",
 	Short:   "Set values of the project",
-	Example: "forge set <project> -p <key>=<value>",
+	Example: "forge env set <project> -p <key>=<value>",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(params) == 0 {
@@ -25,15 +25,12 @@ var setCmd = &cobra.Command{
 		if err != nil {
 			errors.VaultErrors(err)
 		}
-		value, exists := secrets.Data["deploy"]
-		if !exists {
-			errors.VaultErrors(fmt.Errorf("value not found"))
-		}
-		project, err := spec.NewSpec(secrets.Data["mode"].(string))
+		data := secrets.Data
+		project, err := spec.NewSpec(data["mode"].(string))
 		if err != nil {
 			errors.SpecErrors(err)
 		}
-		project.Parse(value.(map[string]any))
+		project.Parse(data)
 		if err := project.Update(params); err != nil {
 			errors.SpecErrors(err)
 		}
@@ -47,6 +44,6 @@ var setCmd = &cobra.Command{
 }
 
 func init() {
-	DeployCmd.AddCommand(setCmd)
+	EnvCmd.AddCommand(setCmd)
 	setCmd.Flags().StringSliceVarP(&params, "param", "p", []string{}, "project parameter")
 }

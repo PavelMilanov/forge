@@ -1,4 +1,4 @@
-package deploy
+package env
 
 import (
 	"context"
@@ -10,14 +10,16 @@ import (
 )
 
 var (
-	deploy bool
 	config bool
 )
 
+/*
+forge env get dev | grep 'tag:' | awk '{print $2}'
+*/
 var getCmd = &cobra.Command{
 	Use:     "get [OPTIONS] [FLAGS]",
 	Short:   "Get project information",
-	Example: "forge deploy get <project> | forge deploy get <project> -p <param>",
+	Example: "forge env get <project> | forge deploy get <project> -c",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
@@ -31,9 +33,7 @@ var getCmd = &cobra.Command{
 		if err != nil {
 			errors.VaultErrors(err)
 		}
-		if deploy {
-			project.Print()
-		} else if config {
+		if config {
 			tmpl, exists := data["template"].(string)
 			if !exists {
 				errors.VaultErrors(fmt.Errorf("value not found"))
@@ -43,12 +43,13 @@ var getCmd = &cobra.Command{
 				errors.VaultErrors(err)
 			}
 			fmt.Print(std)
+		} else {
+			project.Print()
 		}
 	},
 }
 
 func init() {
-	DeployCmd.AddCommand(getCmd)
-	getCmd.Flags().BoolVarP(&deploy, "deploy", "d", false, "project deploy secret")
+	EnvCmd.AddCommand(getCmd)
 	getCmd.Flags().BoolVarP(&config, "config", "c", false, "project config secret")
 }

@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/PavelMilanov/forge/cmd/deploy"
-	"github.com/PavelMilanov/forge/cmd/server"
+	"github.com/PavelMilanov/forge/cmd/env"
 	"github.com/PavelMilanov/forge/config"
 	"github.com/spf13/cobra"
 )
@@ -25,6 +25,6 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.AddCommand(env.EnvCmd)
 	rootCmd.AddCommand(deploy.DeployCmd)
-	rootCmd.AddCommand(server.ServerCmd)
 }
