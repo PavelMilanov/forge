@@ -12,7 +12,6 @@ Env описывает конфигурацию приложения.
 type Env struct {
 	Vault    vault
 	Registry registry
-	SSH      ssh
 }
 
 /*
@@ -30,18 +29,6 @@ type registry struct {
 	Url      string `mapstructure:"url"`
 	Login    string `mapstructure:"login"`
 	Password string `mapstructure:"password"`
-}
-
-/*
-ssh описывает конфигурацию SSH.
-*/
-type ssh struct {
-	PrivateKey string `mapstructure:"private_key"`
-	Servers    []struct {
-		Host   string `mapstructure:"host"`
-		User   string `mapstructure:"user"`
-		Server string `mapstructure:"server"`
-	} `mapstructure:"servers"`
 }
 
 /*
