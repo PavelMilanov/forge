@@ -11,7 +11,6 @@ var (
 	projectMode     string
 	projectAlias    string
 	vault           *api.VaultAPI
-	template        string
 )
 
 var EnvCmd = &cobra.Command{
