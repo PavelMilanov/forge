@@ -1,4 +1,4 @@
-package cmd
+package env
 
 import (
 	"context"
@@ -14,9 +14,8 @@ import (
 var initCmd = &cobra.Command{
 	Use:     "init [FLAGS]",
 	Short:   "Project initialization",
-	Example: "forge init -f path/to/configFile.yaml -m compose -a <string>",
-
-	Args: cobra.NoArgs,
+	Example: "forge env init -f path/to/template.yaml -m compose -a <string>",
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		project, err := spec.NewSpec(projectMode)
@@ -24,9 +23,17 @@ var initCmd = &cobra.Command{
 			errors.SpecErrors(err)
 		}
 		project.Init()
+		template, err := os.ReadFile(projectTemplate)
+		if err != nil {
+			errors.SpecErrors(err)
+		}
 		_, err = vault.API.Get(ctx, projectAlias) // ищет указанный проект в хранилище, если не найден, то создаем новый
 		if err != nil {
-			_, err = vault.API.Put(ctx, projectAlias, map[string]any{"deploy": project, "mode": projectMode})
+			_, err = vault.API.Put(ctx, projectAlias, map[string]any{
+				"deploy":   project,
+				"mode":     projectMode,
+				"template": string(template),
+			})
 			if err != nil {
 				errors.VaultErrors(err)
 			}
@@ -39,6 +46,6 @@ var initCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(initCmd)
+	EnvCmd.AddCommand(initCmd)
 	defaultFlags(initCmd)
 }

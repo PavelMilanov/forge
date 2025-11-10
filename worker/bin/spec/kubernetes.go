@@ -7,7 +7,7 @@ func (k *Kubernetes) Init() {
 
 }
 
-func (k *Kubernetes) Generate(path, alias string) (string, error) {
+func (k *Kubernetes) Generate(path string) (string, error) {
 	return "", nil
 }
 
@@ -18,6 +18,6 @@ func (k *Kubernetes) Update(data []string) error {
 	return nil
 }
 
-func (k *Kubernetes) Print(alias string) {
+func (k *Kubernetes) Print() {
 
 }

@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/PavelMilanov/forge/config"
@@ -32,33 +30,25 @@ func (c *Compose) Init() {
 }
 
 /*
-Generate генерирует файл конфигурации на основе шаблона и данных модели.
+Generate генерирует содержимое файла конфигурации на основе шаблона и данных модели.
 
 Params:
 
-	path - путь к шаблону
-	alias - алиас для идентификации файла
+	tmp - шаблон.
 
 Returns:
 
-	fileName - путь к сгенерированному файлу
-	err - ошибка, если она возникла
+	string - сгенерированное содержимое.
+	err - ошибка, если она возникла.
 */
-func (c *Compose) Generate(path, alias string) (string, error) {
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		return "", err
-	}
+func (c *Compose) Generate(tmp string) (string, error) {
+	tmpl := template.Must(template.New("tmpl").Parse(tmp))
 	var buf bytes.Buffer
-	err = tmpl.Execute(&buf, c)
+	err := tmpl.Execute(&buf, c)
 	if err != nil {
 		return "", err
 	}
-	fileName := filepath.Join(config.CONFIG_PATH, fmt.Sprintf("%s-%s.yml", config.SPECMODE["compose"], alias))
-	if err := os.WriteFile(fileName, buf.Bytes(), 0644); err != nil {
-		return "", err
-	}
-	return fileName, nil
+	return string(buf.Bytes()), nil
 }
 
 /*
@@ -69,8 +59,9 @@ Params:
 	data - входящие данные из Vault
 */
 func (c *Compose) Parse(data map[string]any) {
-	c.Image = data["image"].(string)
-	c.Tag = data["tag"].(string)
+	deploy := data["deploy"].(map[string]any)
+	c.Image = deploy["image"].(string)
+	c.Tag = deploy["tag"].(string)
 }
 
 /*
@@ -124,14 +115,9 @@ func (c *Compose) Update(data []string) error {
 
 /*
 Print форматированный вывод данных модели в консоль.
-
-Params:
-
-	alias - алиас проекта
 */
-func (c *Compose) Print(alias string) {
-	fmt.Printf(`%s
-  image: %s
-  tag: %s
-`, alias, c.Image, c.Tag)
+func (c *Compose) Print() {
+	fmt.Printf(`image: %s
+tag: %s
+`, c.Image, c.Tag)
 }

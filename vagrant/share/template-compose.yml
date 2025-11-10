@@ -1,6 +1,6 @@
 services:
   vault:
-    image: hashicorp/vault:latest
+    image: {{.Image}}:{{.Tag}}
     container_name: vault
     restart: unless-stopped
     cap_add:
@@ -13,16 +13,5 @@ services:
     volumes:
       - vault-data:/vault/file
 
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: unless-stopped
-    ports:
-      - "8081:9000"
-    volumes:
-      - portainer-data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-
 volumes:
   vault-data:
-  portainer-data:

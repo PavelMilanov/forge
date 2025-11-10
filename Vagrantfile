@@ -6,6 +6,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "server" do |server|
     server.vm.hostname = "server"
     server.vm.network "forwarded_port", guest: 8080, host: 8080
+    server.vm.network "forwarded_port", guest: 8081, host: 8081
     server.vm.synced_folder "./vagrant/share", "/home/vagrant/share"
     server.vm.provision "shell", inline: <<-SHELL
       curl -fsSL https://get.docker.com -o get-docker.sh

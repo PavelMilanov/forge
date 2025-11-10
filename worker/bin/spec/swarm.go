@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -38,33 +36,25 @@ func (s *Swarm) Init() {
 }
 
 /*
-Generate генерирует файл конфигурации на основе шаблона и данных модели.
+Generate генерирует содержимое файла конфигурации на основе шаблона и данных модели.
 
 Params:
 
-	path - путь к шаблону
-	alias - алиас для идентификации файла
+	tmp - шаблон.
 
 Returns:
 
-	fileName - путь к сгенерированному файлу
-	err - ошибка, если она возникла
+	string - сгенерированное содержимое.
+	err - ошибка, если она возникла.
 */
-func (s *Swarm) Generate(path, alias string) (string, error) {
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		return "", err
-	}
+func (s *Swarm) Generate(tmp string) (string, error) {
+	tmpl := template.Must(template.New("tmpl").Parse(tmp))
 	var buf bytes.Buffer
-	err = tmpl.Execute(&buf, s)
+	err := tmpl.Execute(&buf, s)
 	if err != nil {
 		return "", err
 	}
-	fileName := filepath.Join(config.CONFIG_PATH, fmt.Sprintf("%s-%s.yml", config.SPECMODE["swarm"], alias))
-	if err := os.WriteFile(fileName, buf.Bytes(), 0644); err != nil {
-		return "", err
-	}
-	return fileName, nil
+	return string(buf.Bytes()), nil
 }
 
 /*
@@ -75,7 +65,8 @@ Params:
 	data - входящие данные из Vault
 */
 func (s *Swarm) Parse(data map[string]any) {
-	switch v := data["replicas"].(type) {
+	deploy := data["deploy"].(map[string]any)
+	switch v := deploy["replicas"].(type) {
 	case json.Number:
 		i, _ := strconv.Atoi(v.String())
 		s.Replicas = i
@@ -83,8 +74,8 @@ func (s *Swarm) Parse(data map[string]any) {
 		i, _ := strconv.Atoi(v)
 		s.Replicas = i
 	}
-	s.Image = data["image"].(string)
-	s.Tag = data["tag"].(string)
+	s.Image = deploy["image"].(string)
+	s.Tag = deploy["tag"].(string)
 }
 
 /*
@@ -149,10 +140,9 @@ Params:
 
 	alias - алиас проекта
 */
-func (s *Swarm) Print(alias string) {
-	fmt.Printf(`%s
-  image: %s
-  tag: %s
-  replicas: %d
-`, alias, s.Image, s.Tag, s.Replicas)
+func (s *Swarm) Print() {
+	fmt.Printf(`image: %s
+tag: %s
+replicas: %d
+`, s.Image, s.Tag, s.Replicas)
 }

@@ -11,10 +11,10 @@ NewSpec спецификация данных инфраструктуры.
 */
 type Spec interface {
 	Init()
-	Generate(path, alias string) (string, error)
+	Generate(path string) (string, error)
 	Parse(map[string]any)
 	Update([]string) error
-	Print(alias string)
+	Print()
 }
 
 /*
