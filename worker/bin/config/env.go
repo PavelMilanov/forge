@@ -10,8 +10,9 @@ import (
 Env описывает конфигурацию приложения.
 */
 type Env struct {
-	Vault    vault
-	Registry registry
+	Vault     vault
+	Registry  registry
+	Portainer portainer
 }
 
 /*
@@ -29,6 +30,11 @@ type registry struct {
 	Url      string `mapstructure:"url"`
 	Login    string `mapstructure:"login"`
 	Password string `mapstructure:"password"`
+}
+
+type portainer struct {
+	Url   string `mapstructure:"url"`
+	Token string `mapstructure:"token"`
 }
 
 /*
