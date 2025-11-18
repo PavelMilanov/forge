@@ -54,7 +54,7 @@ func (s *Swarm) Generate(tmp string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(buf.Bytes()), nil
+	return buf.String(), nil
 }
 
 /*

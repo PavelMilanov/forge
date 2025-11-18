@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"path/filepath"
 	"strings"
 
 	"github.com/PavelMilanov/forge/config"
@@ -42,13 +43,15 @@ Returns:
 	err - ошибка, если она возникла.
 */
 func (c *Compose) Generate(tmp string) (string, error) {
-	tmpl := template.Must(template.New("tmpl").Parse(tmp))
-	var buf bytes.Buffer
-	err := tmpl.Execute(&buf, c)
+	tmpl, err := template.ParseFiles(filepath.Join(config.TEMPLATE_PATH, tmp))
 	if err != nil {
 		return "", err
 	}
-	return string(buf.Bytes()), nil
+	var buf bytes.Buffer
+	if err = tmpl.Execute(&buf, c); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }
 
 /*

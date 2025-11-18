@@ -37,10 +37,10 @@ func init() {
 }
 
 func defaultFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&projectTemplate, "file", "f", "", "path to project/to/template.yml")
+	cmd.Flags().StringVarP(&projectTemplate, "template", "t", "", "path to project/to/template.yml")
 	cmd.Flags().StringVarP(&projectMode, "mode", "m", "compose", "project mode: compose | swarm | kubernetes")
 	cmd.Flags().StringVarP(&projectAlias, "alias", "a", "", "unique alias for the project")
-	cmd.MarkFlagRequired("file")
+	cmd.MarkFlagRequired("template")
 	cmd.MarkFlagRequired("alias")
 
 }
