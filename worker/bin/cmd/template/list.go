@@ -8,7 +8,7 @@ import (
 var listCmd = &cobra.Command{
 	Use:     "list",
 	Short:   "Set values of the project",
-	Example: "forge tmpls list",
+	Example: "forge tmpl list",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		api.GetTemplates()
