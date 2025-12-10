@@ -2,30 +2,37 @@ package spec
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/PavelMilanov/forge/config"
 )
 
 /*
-Compose	интерфейс взаимодействия с docker compose конфигурацией.
+Swarm интерфейс взаимодействия с docker swarm конфигурацией.
 */
-type Compose struct {
-	Image string `json:"image"`
-	Tag   string `json:"tag"`
+type Swarm struct {
+	Image    string `json:"image"`
+	Tag      string `json:"tag"`
+	Replicas int    `json:"replicas"`
 }
 
 /*
 Init инициализирует модель с параметрами по умолчанию.
 */
-func (c *Compose) Init() {
-	if c.Image == "" {
-		c.Image = "image"
+func (s *Swarm) Init() {
+	if s.Image == "" {
+		s.Image = "image"
 	}
-	if c.Tag == "" {
-		c.Tag = "latest"
+	if s.Tag == "" {
+		s.Tag = "latest"
+	}
+	if s.Replicas == 0 {
+		s.Replicas = 1
 	}
 }
 
@@ -41,14 +48,16 @@ Returns:
 	string - сгенерированное содержимое.
 	err - ошибка, если она возникла.
 */
-func (c *Compose) Generate(tmp string) (string, error) {
-	tmpl := template.Must(template.New("tmpl").Parse(tmp))
-	var buf bytes.Buffer
-	err := tmpl.Execute(&buf, c)
+func (s *Swarm) Generate(tmp string) (string, error) {
+	tmpl, err := template.ParseFiles(filepath.Join(config.TEMPLATE_PATH, tmp))
 	if err != nil {
 		return "", err
 	}
-	return string(buf.Bytes()), nil
+	var buf bytes.Buffer
+	if err = tmpl.Execute(&buf, s); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }
 
 /*
@@ -58,10 +67,18 @@ Params:
 
 	data - входящие данные из Vault
 */
-func (c *Compose) Parse(data map[string]any) {
+func (s *Swarm) Parse(data map[string]any) {
 	deploy := data["deploy"].(map[string]any)
-	c.Image = deploy["image"].(string)
-	c.Tag = deploy["tag"].(string)
+	switch v := deploy["replicas"].(type) {
+	case json.Number:
+		i, _ := strconv.Atoi(v.String())
+		s.Replicas = i
+	case string:
+		i, _ := strconv.Atoi(v)
+		s.Replicas = i
+	}
+	s.Image = deploy["image"].(string)
+	s.Tag = deploy["tag"].(string)
 }
 
 /*
@@ -75,7 +92,7 @@ Returns:
 
 	error - ошибка, если она возникла
 */
-func (c *Compose) Update(data []string) error {
+func (s *Swarm) Update(data []string) error {
 	check := func(data []string) error {
 		for _, param := range data {
 			value := strings.Split(param, "=")
@@ -83,7 +100,7 @@ func (c *Compose) Update(data []string) error {
 				return fmt.Errorf("Format is incorrect. Try: forge set <project> -p param=value")
 			}
 			found := false
-			for _, flag := range config.COMPOSEPARAMS {
+			for _, flag := range config.SWARMPARAMS {
 				if value[0] == flag {
 					found = true
 					break
@@ -95,7 +112,6 @@ func (c *Compose) Update(data []string) error {
 		}
 		return nil
 	}
-
 	if err := check(data); err != nil {
 		return err
 	}
@@ -104,20 +120,32 @@ func (c *Compose) Update(data []string) error {
 		value := strings.Split(param, "=")
 		buf[value[0]] = value[1]
 	}
-	if len(buf["tag"]) > 0 {
-		c.Tag = buf["tag"]
-	}
 	if len(buf["image"]) > 0 {
-		c.Image = buf["image"]
+		s.Image = buf["image"]
+	}
+	if len(buf["tag"]) > 0 {
+		s.Tag = buf["tag"]
+	}
+	if len(buf["replicas"]) > 0 {
+		format, err := strconv.Atoi(buf["replicas"])
+		if err != nil {
+			return err
+		}
+		s.Replicas = format
 	}
 	return nil
 }
 
 /*
 Print форматированный вывод данных модели в консоль.
+
+Params:
+
+	alias - алиас проекта
 */
-func (c *Compose) Print() {
+func (s *Swarm) Print() {
 	fmt.Printf(`image: %s
 tag: %s
-`, c.Image, c.Tag)
+replicas: %d
+`, s.Image, s.Tag, s.Replicas)
 }
