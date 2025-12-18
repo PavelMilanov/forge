@@ -89,7 +89,8 @@ forge env tmpl list
 
 Выводит список доступных шаблонов.
 
-#####  init
+##### env
+###### init
 ```bash
 forge env init <project> -t <template.yml> -m compose
 ```
@@ -109,7 +110,7 @@ forge env init <project> -t <template.yml> -m compose
 forge env init dev -t template.yaml -m compose
 ```
 
-##### set
+###### set
 ```bash
 forge env set <project> -p tag=<string> -p replicas=<number>
 ```
@@ -128,7 +129,7 @@ forge env set dev -p tag=alpine
 ```
 >Для спецификации docker swarm можно обновлять один произвольный параметр или указать сразу два.
 
-##### get
+###### get
 ```bash
 forge env get <project>
 ```
@@ -151,22 +152,37 @@ forge env get dev
 ```
 > При вызове команды без флагов в консоль будет выведен форматированный вывод данных согласно спецификации.
 
-##### deploy
+###### versions
 ```bash
-forge deploy <project> -f path/to/file.yaml
+forge env versions <project>
 ```
 
-Генерирует файл конфигурации согласно сохраненным данным в `Vault` и указанному шаблону.
-Итоговый файл конфигурации будет с генерирован в директории `/var/forge/` с названием в формате `спецификация-проект.yml`
+Выводит информацию о версиях конфигурации указанного проекта.
 
 параметры:
 - `<project>` название проекта.
--
-флаги:
-- `-f` путь до файла конфигурации.
 
 пример команды:
 ```bash
-forge deploy dev -f path/to/template.yaml
+forge env versions dev
 ```
-> будет сгенерирован файл /var/forge/compose-dev.yml
+
+###### rollback
+```bash
+forge env rollback <project> <version> -v <version>
+```
+
+Откатывает конфигурацию проекта до указанной версии.
+
+параметры:
+- `<project>` название проекта.
+
+флаги:
+- `-v` версия конфигурации в Vault.
+
+пример команды:
+```bash
+forge env rollback dev 2 -v 2
+```
+
+##### deploy
