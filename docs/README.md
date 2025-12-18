@@ -182,7 +182,7 @@ forge env rollback <project> <version> -v <version>
 
 пример команды:
 ```bash
-forge env rollback dev 2 -v 2
+forge env rollback dev -v 2
 ```
 
 ##### deploy
