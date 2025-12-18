@@ -17,9 +17,9 @@ var (
 forge env get dev | grep 'tag:' | awk '{print $2}'
 */
 var getCmd = &cobra.Command{
-	Use:     "get [OPTIONS] [FLAGS]",
+	Use:     "get [PROJECT] [FLAGS]",
 	Short:   "Get project information",
-	Example: "forge env get <project> | forge deploy get <project> -c",
+	Example: "forge env get <project> | forge env get <project> -c",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()

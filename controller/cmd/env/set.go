@@ -12,7 +12,7 @@ import (
 var params []string
 
 var setCmd = &cobra.Command{
-	Use:     "set [OPTIONS] [FLAGS]",
+	Use:     "set [PROJECT] [FLAGS]",
 	Short:   "Set values of the project",
 	Example: "forge env set <project> -p <key>=<value>",
 	Args:    cobra.ExactArgs(1),

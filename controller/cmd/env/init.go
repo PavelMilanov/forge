@@ -12,10 +12,10 @@ import (
 )
 
 var initCmd = &cobra.Command{
-	Use:     "init [FLAGS]",
+	Use:     "init [PROJECT] [FLAGS]",
 	Short:   "Project initialization",
-	Example: "forge env init -t template.yaml -m compose -a <string>",
-	Args:    cobra.NoArgs,
+	Example: "forge env init <project> -t template.yaml -m compose",
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		project, err := spec.NewSpec(projectMode)
@@ -23,13 +23,9 @@ var initCmd = &cobra.Command{
 			errors.SpecErrors(err)
 		}
 		project.Init()
-		// template, err := os.ReadFile(projectTemplate)
-		// if err != nil {
-		// 	errors.SpecErrors(err)
-		// }
-		_, err = vault.API.Get(ctx, projectAlias) // ищет указанный проект в хранилище, если не найден, то создаем новый
+		_, err = vault.API.Get(ctx, args[0]) // ищет указанный проект в хранилище, если не найден, то создаем новый
 		if err != nil {
-			_, err = vault.API.Put(ctx, projectAlias, map[string]any{
+			_, err = vault.API.Put(ctx, args[0], map[string]any{
 				"deploy":   project,
 				"mode":     projectMode,
 				"template": projectTemplate,
@@ -37,7 +33,7 @@ var initCmd = &cobra.Command{
 			if err != nil {
 				errors.VaultErrors(err)
 			}
-			text := fmt.Sprintf("The project %s initialization was successful\nSee %s", projectAlias, vault.ENV.Vault.Url)
+			text := fmt.Sprintf("The project %s initialization was successful\nSee %s", args[0], vault.ENV.Vault.Url)
 			fmt.Println(text)
 			os.Exit(0)
 		}
