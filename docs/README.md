@@ -78,27 +78,41 @@ volumes:
 ![init_swarm](/docs/images/init_swarm.png)
 #### Использование
 
-#####  init
+  Перед инициализацией конфигурационного файла необходимо создать шаблон и расположить его в каталоге `var/forge/templates`.
+
+  Инициализация конфигурационных файла разрешена только из списка доступных шаблонов.
+
+##### template
 ```bash
-forge init -f <file> -m compose -a <string>
+forge env tmpl list
+```
+
+Выводит список доступных шаблонов.
+
+##### env
+###### init
+```bash
+forge env init <project> -t <template.yml> -m compose
 ```
 
 Сопоставляет шаблон указанного файла и создает `vault secret` исходя из его спецификации.
 
+параметры:
+- `<project>` название проекта.
+
 флаги:
-- `-f` путь до файла конфигурации;
-- `-m` спецификация файла. По-умолчанию `compose`;
+- `-t` файл конфигурации;
+- `-m` спецификация файла. По-умолчанию `compose`.
 	Разрешенные значения: `compose` | `swarm`
-- `-a` название секрета в Vault / название проекта.
 
 пример команды:
 ```bash
-forge init -f /path/to/template.yaml -m compose -a dev
+forge env init dev -t template.yaml -m compose
 ```
 
-##### set
+###### set
 ```bash
-forge set <project> -p tag=<string> -p replicas=<number>
+forge env set <project> -p tag=<string> -p replicas=<number>
 ```
 
 Обновляет параметры модели указанного проекта согласно спецификации.
@@ -111,17 +125,17 @@ forge set <project> -p tag=<string> -p replicas=<number>
 
 пример команды:
 ```bash
-forge set dev -p tag=alpine
+forge env set dev -p tag=alpine
 ```
 >Для спецификации docker swarm можно обновлять один произвольный параметр или указать сразу два.
 
-##### get
+###### get
 ```bash
-forge get <project>
+forge env get <project>
 ```
 
 ```bash
-forge get <project> -p <param>
+forge env get <project> -c
 ```
 
 Выводит информацию о текущей конфигурации указанного проекта.
@@ -130,30 +144,45 @@ forge get <project> -p <param>
 - `<project>` название проекта.
 
 флаги:
-- `-p` параметр, который необходимо получить и вывести в консоль.
+- `-c` вывод конфигурационного файла.
 
 пример команды:
 ```bash
-forge get dev -p tag
+forge env get dev
 ```
 > При вызове команды без флагов в консоль будет выведен форматированный вывод данных согласно спецификации.
 
-##### deploy
+###### versions
 ```bash
-forge deploy <project> -f path/to/file.yaml
+forge env versions <project>
 ```
 
-Генерирует файл конфигурации согласно сохраненным данным в `Vault` и указанному шаблону.
-Итоговый файл конфигурации будет с генерирован в директории `/var/forge/` с названием в формате `спецификация-проект.yml`
+Выводит информацию о версиях конфигурации указанного проекта.
 
 параметры:
 - `<project>` название проекта.
--
-флаги:
-- `-f` путь до файла конфигурации.
 
 пример команды:
 ```bash
-forge deploy dev -f path/to/template.yaml
+forge env versions dev
 ```
-> будет сгенерирован файл /var/forge/compose-dev.yml
+
+###### rollback
+```bash
+forge env rollback <project> <version> -v <version>
+```
+
+Откатывает конфигурацию проекта до указанной версии.
+
+параметры:
+- `<project>` название проекта.
+
+флаги:
+- `-v` версия конфигурации в Vault.
+
+пример команды:
+```bash
+forge env rollback dev -v 2
+```
+
+##### deploy
