@@ -51,13 +51,13 @@ Returns
 
 	error - ошибка при обновлении токена Vault
 */
-func (v *VaultAPI) RenewToken() error {
-	_, err := v.Client.Auth().Token().RenewSelf(2764800) // 30 days
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// func (v *VaultAPI) RenewToken() error {
+// 	_, err := v.Client.Auth().Token().RenewSelf(2764800) // 30 days
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
 /*
 Set устанавливает токен Vault.
@@ -77,7 +77,7 @@ Returns
 func (v *VaultAPI) Login() error {
 	auth, err := approle.NewAppRoleAuth(
 		v.ENV.Vault.Role,
-		&approle.SecretID{FromString: v.ENV.Vault.Secret},
+		&approle.SecretID{FromEnv: v.ENV.Vault.Secret},
 	)
 	if err != nil {
 		return err
