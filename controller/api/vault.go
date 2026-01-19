@@ -77,7 +77,7 @@ Returns
 func (v *VaultAPI) Login() error {
 	auth, err := approle.NewAppRoleAuth(
 		v.ENV.Vault.Role,
-		&approle.SecretID{FromEnv: v.ENV.Vault.Secret},
+		&approle.SecretID{FromString: v.ENV.Vault.Secret},
 	)
 	if err != nil {
 		return err
