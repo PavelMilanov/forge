@@ -28,10 +28,13 @@ func init() {
 	if err != nil {
 		errors.VaultErrors(err)
 	}
-	vault.Set()
-	if err := vault.RenewToken(); err != nil {
+	if err := vault.Login(); err != nil {
 		errors.VaultErrors(err)
 	}
+	// vault.Set()
+	// if err := vault.RenewToken(); err != nil {
+	// 	errors.VaultErrors(err)
+	// }
 
 }
 

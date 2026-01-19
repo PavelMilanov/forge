@@ -19,8 +19,10 @@ type Env struct {
 vault описывает конфигурацию Hashicorp Vault.
 */
 type vault struct {
-	Url   string `mapstructure:"url"`
-	Token string `mapstructure:"token"`
+	Url string `mapstructure:"url"`
+	// Token string `mapstructure:"token"`
+	Role   string `mapstructure:"role_id"`
+	Secret string `mapstructure:"secret_id"`
 }
 
 /*
@@ -59,8 +61,11 @@ func NewEnv(path, file string) (*Env, error) {
 	if err != nil {
 		return nil, err
 	}
-	if env.Vault.Url == "" || env.Vault.Token == "" {
-		return nil, fmt.Errorf("invalid vault configuration")
+	if env.Vault.Url == "" {
+		return nil, fmt.Errorf("No parse vault.url")
+	}
+	if env.Vault.Role == "" || env.Vault.Secret == "" {
+		return nil, fmt.Errorf("No parse vault.role_id or vault.secret_id")
 	}
 	return &env, nil
 }
