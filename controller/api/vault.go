@@ -27,7 +27,7 @@ Returns
 	error - ошибка при создании экземпляра VaultAPI
 */
 func NewVaultClient() (*VaultAPI, error) {
-	env, err := config.NewEnv(config.CONFIG_PATH, config.CONFIG_FILE)
+	env, err := config.NewEnv(config.FORGE_PATH, config.FORGE_FILE)
 	if err != nil {
 		return nil, err
 	}
