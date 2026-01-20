@@ -18,6 +18,7 @@ func VaultErrors(err error) {
 		fmt.Println("Storage connection unavailable. Please check your Vault configuration.")
 		os.Exit(1)
 	case strings.Contains(err.Error(), "Error making API request"):
+		fmt.Println(err)
 		fmt.Println("Vault API bad request. Check your vault token.")
 		os.Exit(1)
 	default:

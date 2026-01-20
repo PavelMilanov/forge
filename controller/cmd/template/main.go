@@ -11,7 +11,7 @@ import (
 
 var (
 	file  string
-	vault *api.VaultAPI
+	vault *api.Vault
 )
 
 var TmpCmd = &cobra.Command{

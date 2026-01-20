@@ -19,8 +19,7 @@ type Env struct {
 vault описывает конфигурацию Hashicorp Vault.
 */
 type vault struct {
-	Url string `mapstructure:"url"`
-	// Token string `mapstructure:"token"`
+	Url    string `mapstructure:"url"`
 	Role   string `mapstructure:"role_id"`
 	Secret string `mapstructure:"secret_id"`
 }

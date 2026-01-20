@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/PavelMilanov/forge/config"
 	"github.com/hashicorp/vault/api"
@@ -12,7 +11,7 @@ import (
 /*
 VaultAPI предоставляет интерфейс для взаимодействия с Vault.
 */
-type VaultAPI struct {
+type Vault struct {
 	ENV    *config.Env
 	Client *api.Client
 	API    *api.KVv2
@@ -23,10 +22,10 @@ NewVaultClient обёртка над API Vault.
 
 Returns
 
-	*VaultAPI - экземпляр VaultAPI
-	error - ошибка при создании экземпляра VaultAPI
+	*Vault - экземпляр Vault
+	error - ошибка при создании экземпляра Vault
 */
-func NewVaultClient() (*VaultAPI, error) {
+func NewVaultClient() (*Vault, error) {
 	env, err := config.NewEnv(config.FORGE_PATH, config.FORGE_FILE)
 	if err != nil {
 		return nil, err
@@ -38,34 +37,12 @@ func NewVaultClient() (*VaultAPI, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &VaultAPI{
+	return &Vault{
 		ENV:    env,
 		Client: client,
+		API:    client.KVv2(config.VAULT_PATH),
 	}, nil
 }
-
-/*
-RenewToken обновляет токен Vault.
-
-Returns
-
-	error - ошибка при обновлении токена Vault
-*/
-// func (v *VaultAPI) RenewToken() error {
-// 	_, err := v.Client.Auth().Token().RenewSelf(2764800) // 30 days
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
-/*
-Set устанавливает токен Vault.
-*/
-// func (v *VaultAPI) Set() {
-// 	v.Client.SetToken(v.ENV.Vault.Token)
-// 	v.API = v.Client.KVv2(config.VAULT_PATH)
-// }
 
 /*
 Login авторизует приложение в Vault.
@@ -74,7 +51,7 @@ Returns
 
 	error - ошибка при авторизации приложения в Vault
 */
-func (v *VaultAPI) Login() error {
+func (v *Vault) Login() error {
 	auth, err := approle.NewAppRoleAuth(
 		v.ENV.Vault.Role,
 		&approle.SecretID{FromString: v.ENV.Vault.Secret},
@@ -86,6 +63,7 @@ func (v *VaultAPI) Login() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Успешная авторизация. Токен %s", authInfo.Auth.ClientToken)
+	v.Client.SetToken(authInfo.Auth.ClientToken)
+	// fmt.Printf("Успешная авторизация. Токен %s", authInfo.Auth.ClientToken)
 	return nil
 }

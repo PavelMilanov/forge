@@ -9,7 +9,7 @@ import (
 var (
 	projectTemplate string
 	projectMode     string
-	vault           *api.VaultAPI
+	vault           *api.Vault
 )
 
 var EnvCmd = &cobra.Command{
