@@ -31,11 +31,6 @@ func init() {
 	if err := vault.Login(); err != nil {
 		errors.VaultErrors(err)
 	}
-	// vault.Set()
-	// if err := vault.RenewToken(); err != nil {
-	// 	errors.VaultErrors(err)
-	// }
-
 }
 
 func defaultFlags(cmd *cobra.Command) {
