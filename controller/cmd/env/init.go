@@ -14,7 +14,7 @@ import (
 var initCmd = &cobra.Command{
 	Use:     "init [PROJECT] [FLAGS]",
 	Short:   "Project initialization",
-	Example: "forge env init <project> -t template.yaml -m compose",
+	Example: "forge env init [PROJECT] -t template.yaml -m compose",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
