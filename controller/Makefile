@@ -14,6 +14,6 @@ build:
 
 start:
 	docker exec -e VAULT_TOKEN='root' vault vault auth enable approle
-	#vault write auth/approle/role/forge token_period="24h" token_policies="my-policy"
-	#vault read auth/approle/role/forge/role-id
-	#vault write -f auth/approle/role/forge/secret-id
+	#docker exec -e VAULT_TOKEN='root' vault vault write auth/approle/role/forge token_period="24h" token_policies="forge"
+	#docker exec -e VAULT_TOKEN='root' vault vault read auth/approle/role/forge/role-id
+	#docker exec -e VAULT_TOKEN='root' vault vault write -f auth/approle/role/forge/secret-id

@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+
 	cmd.Execute()
 	os.Exit(0)
 }

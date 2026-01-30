@@ -34,8 +34,8 @@ type registry struct {
 }
 
 type portainer struct {
-	Url   string `mapstructure:"url"`
-	Token string `mapstructure:"token"`
+	Url string `mapstructure:"url"`
+	Key string `mapstructure:"api_key"`
 }
 
 /*
