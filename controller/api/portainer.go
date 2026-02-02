@@ -22,6 +22,9 @@ type Portainer struct {
 	Key string
 }
 
+/*
+Stack представляет абстракцию при взаимодействии с json в Portainer API.
+*/
 type Stack struct {
 	ID       int    `json:"Id"`
 	Name     string `json:"Name"`
@@ -33,6 +36,7 @@ type Stack struct {
 // /api/stacks/11/file
 // /api/stacks/11?endpointId=8
 
+// NewPortainer создает новый экземпляр Portainer.
 func NewPortainer(env *config.Env) (*Portainer, error) {
 	return &Portainer{Url: env.Portainer.Url, Key: env.Portainer.Key}, nil
 }

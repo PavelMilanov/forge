@@ -13,12 +13,10 @@ var (
 )
 
 var EnvCmd = &cobra.Command{
-	Use:   "env [command]",
-	Short: "Manage environment",
-	// Example: "forge env",
-	// Args:    cobra.ExactArgs(1),
+	Use:     "env",
+	Short:   "Manage environment",
+	Example: "forge env",
 	Run: func(cmd *cobra.Command, args []string) {
-
 	},
 }
 
@@ -37,6 +35,5 @@ func defaultFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&projectTemplate, "template", "t", "", "path to project/to/template.yml")
 	cmd.Flags().StringVarP(&projectMode, "mode", "m", "compose", "project mode: compose | swarm | kubernetes")
 	cmd.MarkFlagRequired("template")
-	cmd.MarkFlagRequired("alias")
-
+	cmd.MarkFlagRequired("compose")
 }
