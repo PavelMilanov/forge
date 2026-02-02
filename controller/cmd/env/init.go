@@ -12,7 +12,7 @@ import (
 )
 
 var initCmd = &cobra.Command{
-	Use:     "init [PROJECT] [FLAGS]",
+	Use:     "init",
 	Short:   "Project initialization",
 	Example: "forge env init [PROJECT] -t template.yaml -m compose",
 	Args:    cobra.ExactArgs(1),

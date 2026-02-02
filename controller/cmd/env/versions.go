@@ -9,7 +9,7 @@ import (
 )
 
 var versionsCmd = &cobra.Command{
-	Use:     "versions [PROJECT]",
+	Use:     "versions",
 	Short:   "Print version history to project",
 	Example: "forge env versions [PROJECT]",
 	Args:    cobra.ExactArgs(1),

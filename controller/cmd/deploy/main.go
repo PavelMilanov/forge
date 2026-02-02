@@ -14,7 +14,7 @@ var (
 )
 
 var DeployCmd = &cobra.Command{
-	Use:     "deploy [command]",
+	Use:     "deploy",
 	Short:   "Manage deployment",
 	Example: "forge deploy",
 	Run: func(cmd *cobra.Command, args []string) {
