@@ -2,6 +2,7 @@ package deploy
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/PavelMilanov/forge/api"
 	"github.com/PavelMilanov/forge/config"
@@ -38,4 +39,18 @@ func init() {
 func defaultFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&portainerStack, "stack", "s", "", "portainer stack name")
 	cmd.MarkFlagRequired("stack")
+
+	cmd.RegisterFlagCompletionFunc("stack", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		stacks, err := portainer.GetStacks()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		var completions []string
+		for _, stack := range stacks {
+			if strings.HasPrefix(stack.Name, toComplete) {
+				completions = append(completions, stack.Name)
+			}
+		}
+		return completions, cobra.ShellCompDirectiveNoFileComp
+	})
 }
