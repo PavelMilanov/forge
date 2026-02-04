@@ -9,9 +9,9 @@ import (
 )
 
 var versionsCmd = &cobra.Command{
-	Use:     "versions",
+	Use:     "versions [project]",
 	Short:   "Print version history to project",
-	Example: "forge env versions [PROJECT]",
+	Example: "forge env versions dev",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()

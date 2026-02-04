@@ -17,10 +17,10 @@ var (
 forge env get dev | grep 'tag:' | awk '{print $2}'
 */
 var getCmd = &cobra.Command{
-	Use:     "get",
+	Use:     "get [project]",
 	Short:   "Get project information",
-	Example: "forge env get [PROJECT] | forge env get [PROJECT] -c",
-	Args:    cobra.ExactArgs(1),
+	Example: "forge env get dev | forge env get dev -c",
+	Args:    cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		secrets, err := vault.API.Get(ctx, args[0])

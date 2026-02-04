@@ -52,7 +52,6 @@ func (p *Portainer) GetStacks() ([]Stack, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("Error sending request: %s\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
@@ -61,7 +60,6 @@ func (p *Portainer) GetStacks() ([]Stack, error) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %s\n", err)
 		return nil, err
 	}
 	err = json.Unmarshal(body, &stacks)
@@ -82,13 +80,11 @@ func (p *Portainer) GetStackFile(stack Stack) (*Stack, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("Error sending request: %s\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %s\n", err)
 		return nil, err
 	}
 	err = json.Unmarshal(body, &stack)

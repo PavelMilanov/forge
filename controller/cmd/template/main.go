@@ -15,12 +15,12 @@ var (
 )
 
 var TmpCmd = &cobra.Command{
-	Use:   "tmpl [command]",
-	Short: "Manage template",
-	// Example: "forge env",
-	// Args:    cobra.ExactArgs(1),
+	Use:       "tmpl [command]",
+	Short:     "Manage template",
+	Example:   "forge tmpl",
+	ValidArgs: []string{"list"},
+	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 	Run: func(cmd *cobra.Command, args []string) {
-
 	},
 }
 

@@ -12,9 +12,9 @@ import (
 var params []string
 
 var setCmd = &cobra.Command{
-	Use:     "set",
+	Use:     "set [project]",
 	Short:   "Set values of the project",
-	Example: "forge env set [PROJECT] -p <key>=<value>",
+	Example: "forge env set dev -p image=rosomilanov/container-registry",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(params) == 0 {
@@ -39,7 +39,6 @@ var setCmd = &cobra.Command{
 			errors.VaultErrors(err)
 		}
 		project.Print()
-
 	},
 }
 

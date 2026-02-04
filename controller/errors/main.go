@@ -42,9 +42,9 @@ func SpecErrors(err error) {
 }
 
 /*
-RemoteErrors обработчик ошибок при работе с удаленной инфраструктурой.
+DeployErrors обработчик ошибок при работе с моделями инфраструктуры.
 */
-func RemoteErrors(err error) {
+func DeployErrors(err error) {
 	switch {
 	default:
 		fmt.Println(err)

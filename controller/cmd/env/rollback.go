@@ -11,9 +11,9 @@ import (
 var versionNum int
 
 var rollbackCmd = &cobra.Command{
-	Use:     "rollback",
+	Use:     "rollback [project]",
 	Short:   "Rollback config to version",
-	Example: "forge env rollback [PROJECT] -v <version>",
+	Example: "forge env rollback dev -v 1",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()

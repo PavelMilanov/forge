@@ -3,6 +3,7 @@ package deploy
 import (
 	"fmt"
 
+	"github.com/PavelMilanov/forge/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -14,17 +15,17 @@ var portainerCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		stacks, err := portainer.GetStacks()
 		if err != nil {
-			fmt.Println(err)
+			errors.DeployErrors(err)
 		}
 		for _, stack := range stacks {
 			if stack.Name == portainerStack {
 				project, err := portainer.GetStackFile(stack)
 				if err != nil {
-					fmt.Println(err)
+					errors.DeployErrors(err)
 				}
 				resp, err := portainer.UpdateStack(project)
 				if err != nil {
-					fmt.Println(err)
+					errors.DeployErrors(err)
 				}
 				fmt.Println(resp)
 				return
