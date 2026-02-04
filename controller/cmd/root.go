@@ -14,6 +14,14 @@ var rootCmd = &cobra.Command{
 	Use:     "forge",
 	Short:   "cli-utility for managing ci/cd integration with infrastructure",
 	Version: config.VERSION,
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		env, err := config.NewEnv(config.FORGE_PATH, config.FORGE_FILE)
+		if err != nil {
+			return err
+		}
+		config.NewAppConfig(env)
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 	},
 }

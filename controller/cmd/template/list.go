@@ -1,7 +1,6 @@
 package template
 
 import (
-	"github.com/PavelMilanov/forge/api"
 	"github.com/spf13/cobra"
 )
 
@@ -11,7 +10,7 @@ var listCmd = &cobra.Command{
 	Example: "forge tmpl list",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		api.GetTemplates()
+		appTemplate.GetTemplates()
 	},
 }
 

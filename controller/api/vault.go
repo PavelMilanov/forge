@@ -25,11 +25,11 @@ Returns
 	*Vault - экземпляр Vault
 	error - ошибка при создании экземпляра Vault
 */
-func NewVaultClient() (*Vault, error) {
-	env, err := config.NewEnv(config.FORGE_PATH, config.FORGE_FILE)
-	if err != nil {
-		return nil, err
-	}
+func NewVaultClient(env *config.Env) (*Vault, error) {
+	// env, err := config.NewEnv(config.FORGE_PATH, config.FORGE_FILE)
+	// if err != nil {
+	// 	return nil, err
+	// }
 	cfg := api.DefaultConfig()
 	cfg.Address = env.Vault.Url
 	client, err := api.NewClient(cfg)

@@ -2,7 +2,10 @@ package deploy
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/PavelMilanov/forge/api"
+	"github.com/PavelMilanov/forge/config"
 	"github.com/PavelMilanov/forge/errors"
 	"github.com/spf13/cobra"
 )
@@ -37,5 +40,35 @@ var portainerCmd = &cobra.Command{
 
 func init() {
 	DeployCmd.AddCommand(portainerCmd)
-	defaultFlags(portainerCmd)
+	portainerCmd.Flags().StringVarP(&portainerStack, "stack", "s", "", "portainer stack name")
+	portainerCmd.MarkFlagRequired("stack")
+
+	portainerCmd.RegisterFlagCompletionFunc("stack", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		if portainer == nil {
+			if config.AppConfig == nil {
+				cfg, err := config.NewEnv(config.FORGE_PATH, config.FORGE_FILE)
+				if err != nil {
+					return nil, cobra.ShellCompDirectiveError
+				}
+				config.AppConfig = cfg
+			}
+			p, err := api.NewPortainer(config.AppConfig)
+			if err != nil {
+				return nil, cobra.ShellCompDirectiveError
+			}
+			portainer = p
+		}
+		stacks, err := portainer.GetStacks()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+
+		var completions []string
+		for _, stack := range stacks {
+			if strings.HasPrefix(stack.Name, toComplete) {
+				completions = append(completions, stack.Name)
+			}
+		}
+		return completions, cobra.ShellCompDirectiveNoFileComp
+	})
 }

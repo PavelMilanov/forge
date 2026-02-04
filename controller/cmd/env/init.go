@@ -43,5 +43,12 @@ var initCmd = &cobra.Command{
 
 func init() {
 	EnvCmd.AddCommand(initCmd)
-	defaultFlags(initCmd)
+	initCmd.Flags().StringVarP(&projectTemplate, "template", "t", "", "path to project/to/template.yml")
+	initCmd.Flags().StringVarP(&projectMode, "mode", "m", "compose", "project mode: compose | swarm | kubernetes")
+	initCmd.MarkFlagRequired("template")
+	initCmd.MarkFlagRequired("mode")
+
+	initCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"compose", "swarm", "kubernetes"}, cobra.ShellCompDirectiveNoFileComp
+	})
 }

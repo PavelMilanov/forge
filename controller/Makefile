@@ -4,8 +4,8 @@ dev:
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
 	go build -trimpath \
 	-ldflags="-s -w -X 'github.com/PavelMilanov/forge/config.FORGE_PATH=/var/forge'" \
-	-o ../vagrant/server/work \
-	.
+	-o ../vagrant/server/work .
+	#source <(./forge completion bash)
 
 build:
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \

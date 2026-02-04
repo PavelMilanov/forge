@@ -9,10 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	config bool
-)
-
 /*
 forge env get dev | grep 'tag:' | awk '{print $2}'
 */
@@ -33,7 +29,7 @@ var getCmd = &cobra.Command{
 		if err != nil {
 			errors.VaultErrors(err)
 		}
-		if config {
+		if envConfig {
 			tmpl, exists := data["template"].(string)
 			if !exists {
 				errors.VaultErrors(fmt.Errorf("value not found"))
@@ -51,5 +47,5 @@ var getCmd = &cobra.Command{
 
 func init() {
 	EnvCmd.AddCommand(getCmd)
-	getCmd.Flags().BoolVarP(&config, "config", "c", false, "project config secret")
+	getCmd.Flags().BoolVarP(&envConfig, "config", "c", false, "project config secret")
 }

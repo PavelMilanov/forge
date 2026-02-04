@@ -38,7 +38,7 @@ type Stack struct {
 
 // NewPortainer создает новый экземпляр Portainer.
 func NewPortainer(env *config.Env) (*Portainer, error) {
-	return &Portainer{Url: env.Portainer.Url, Key: env.Portainer.Key}, nil
+	return &Portainer{Url: env.Agent.Credentials.Url, Key: env.Agent.Credentials.Key}, nil
 }
 
 func (p *Portainer) GetStacks() ([]Stack, error) {

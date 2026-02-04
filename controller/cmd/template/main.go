@@ -9,10 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	file  string
-	vault *api.Vault
-)
+var appTemplate *api.Template
 
 var TmpCmd = &cobra.Command{
 	Use:       "tmpl [command]",
@@ -20,6 +17,14 @@ var TmpCmd = &cobra.Command{
 	Example:   "forge tmpl",
 	ValidArgs: []string{"list"},
 	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		cfg, err := api.NewTemplate()
+		if err != nil {
+			return err
+		}
+		appTemplate = cfg
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 	},
 }

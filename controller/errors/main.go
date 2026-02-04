@@ -51,3 +51,14 @@ func DeployErrors(err error) {
 		os.Exit(1)
 	}
 }
+
+/*
+ForgeErrors общий обработчик ошибок.
+*/
+func ForgeErrors(err error) {
+	switch {
+	default:
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}

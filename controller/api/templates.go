@@ -5,12 +5,20 @@ import (
 	"os"
 
 	"github.com/PavelMilanov/forge/config"
+	"github.com/PavelMilanov/forge/errors"
 )
 
-func GetTemplates() {
+type Template struct {
+}
+
+func NewTemplate() (*Template, error) {
+	return &Template{}, nil
+}
+
+func (t *Template) GetTemplates() {
 	entries, err := os.ReadDir(config.TEMPLATE_PATH)
 	if err != nil {
-		fmt.Println(err)
+		errors.ForgeErrors(err)
 	}
 	for _, entry := range entries {
 		// Выводим имя файла или директории

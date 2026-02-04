@@ -2,13 +2,14 @@ package env
 
 import (
 	"github.com/PavelMilanov/forge/api"
-	"github.com/PavelMilanov/forge/errors"
+	"github.com/PavelMilanov/forge/config"
 	"github.com/spf13/cobra"
 )
 
 var (
 	projectTemplate string
 	projectMode     string
+	envConfig       bool
 	vault           *api.Vault
 )
 
@@ -18,24 +19,20 @@ var EnvCmd = &cobra.Command{
 	Example:   "forge env",
 	ValidArgs: []string{"init", "set", "get", "rollback", "versions"},
 	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		cfg, err := api.NewVaultClient(config.AppConfig)
+		if err != nil {
+			return err
+		}
+		if err := cfg.Login(); err != nil {
+			return err
+		}
+		vault = cfg
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 	},
 }
 
 func init() {
-	var err error
-	vault, err = api.NewVaultClient()
-	if err != nil {
-		errors.VaultErrors(err)
-	}
-	if err := vault.Login(); err != nil {
-		errors.VaultErrors(err)
-	}
-}
-
-func defaultFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&projectTemplate, "template", "t", "", "path to project/to/template.yml")
-	cmd.Flags().StringVarP(&projectMode, "mode", "m", "compose", "project mode: compose | swarm | kubernetes")
-	cmd.MarkFlagRequired("template")
-	cmd.MarkFlagRequired("compose")
 }
