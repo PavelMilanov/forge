@@ -10,8 +10,6 @@ import (
 	"net/url"
 	"strconv"
 	"time"
-
-	"github.com/PavelMilanov/forge/config"
 )
 
 /*
@@ -37,8 +35,8 @@ type Stack struct {
 // /api/stacks/11?endpointId=8
 
 // NewPortainer создает новый экземпляр Portainer.
-func NewPortainer(env *config.Env) (*Portainer, error) {
-	return &Portainer{Url: env.Agent.Credentials.Url, Key: env.Agent.Credentials.Key}, nil
+func NewPortainer(url, key string) (*Portainer, error) {
+	return &Portainer{Url: url, Key: key}, nil
 }
 
 func (p *Portainer) GetStacks() ([]Stack, error) {

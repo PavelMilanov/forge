@@ -11,7 +11,7 @@ func TestGetStacks(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error loading environment: %s", err)
 	}
-	portainer, err := NewPortainer(env)
+	portainer, err := NewPortainer(env.Agent.Credentials.Url, env.Agent.Credentials.Key)
 	if err != nil {
 		t.Errorf("Error creating Portainer client: %s", err)
 	}
@@ -27,7 +27,7 @@ func TestGetStackFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error loading environment: %s", err)
 	}
-	portainer, err := NewPortainer(env)
+	portainer, err := NewPortainer(env.Agent.Credentials.Url, env.Agent.Credentials.Key)
 	if err != nil {
 		t.Errorf("Error creating Portainer client: %s", err)
 	}
@@ -47,7 +47,7 @@ func TestUpdateStack(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error loading environment: %s", err)
 	}
-	portainer, err := NewPortainer(env)
+	portainer, err := NewPortainer(env.Agent.Credentials.Url, env.Agent.Credentials.Key)
 	if err != nil {
 		t.Errorf("Error creating Portainer client: %s", err)
 	}
