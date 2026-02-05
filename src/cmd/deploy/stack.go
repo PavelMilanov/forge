@@ -24,5 +24,7 @@ var stackCmd = &cobra.Command{
 func init() {
 	DeployCmd.AddCommand(stackCmd)
 	stackCmd.Flags().StringVarP(&deployStack, "name", "n", "", "stack name")
+	stackCmd.Flags().StringVarP(&deployTemplate, "template", "t", "", "stack template")
 	stackCmd.MarkFlagRequired("name")
+	stackCmd.MarkFlagsRequiredTogether("template", "name")
 }

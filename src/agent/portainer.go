@@ -27,7 +27,7 @@ func (a *PortainerAgent) DeployStack(name string) error {
 		return err
 	}
 	for _, stack := range stacks {
-		if stack.Name == name {
+		if stack.StackName == name {
 			project, err := portainer.GetStackFile(stack)
 			if err != nil {
 				return err

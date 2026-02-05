@@ -6,8 +6,9 @@ import (
 )
 
 var (
-	deployStack string
-	portainer   *api.Portainer
+	deployStack    string
+	deployTemplate string
+	portainer      *api.Portainer
 )
 
 var DeployCmd = &cobra.Command{

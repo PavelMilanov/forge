@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -24,10 +25,12 @@ type Portainer struct {
 Stack представляет абстракцию при взаимодействии с json в Portainer API.
 */
 type Stack struct {
-	ID       int    `json:"Id"`
-	Name     string `json:"Name"`
-	Endpoint int    `json:"EndpointId"`
-	File     string `json:"StackFileContent"`
+	ID           int    `json:"Id"`
+	StackName    string `json:"Name"`
+	TemplateName string `json:"Title"`
+	Endpoint     int    `json:"EndpointId"`
+	StackFile    string `json:"StackFileContent"`
+	TemplateFile string `json:"FileContent"`
 }
 
 // /api/stacks
@@ -53,6 +56,9 @@ func (p *Portainer) GetStacks() ([]Stack, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("Portainer API returned: " + resp.Status)
+	}
 
 	var stacks []Stack
 
@@ -107,7 +113,7 @@ func (p *Portainer) UpdateStack(stack *Stack) (string, error) {
 		Env:       []string{},
 		Prune:     true,
 		PullImage: true,
-		File:      stack.File,
+		File:      stack.StackFile,
 	}
 	jsonData, err := json.Marshal(data)
 	if err != nil {
@@ -135,4 +141,62 @@ func (p *Portainer) UpdateStack(stack *Stack) (string, error) {
 		return "", err
 	}
 	return string(body), nil
+}
+
+func (p *Portainer) GetTemplates() ([]Stack, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.Url+"/api/custom_templates", nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("X-API-Key", p.Key)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("Error sending request: %s\n", err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var stacks []Stack
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error reading response body: %s\n", err)
+		return nil, err
+	}
+	err = json.Unmarshal(body, &stacks)
+	if err != nil {
+		return nil, err
+	}
+	return stacks, nil
+}
+
+func (p *Portainer) GetTemplateFile(stack Stack) (*Stack, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.Url+"/api/custom_templates/"+strconv.Itoa(stack.ID)+"/file", nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("X-API-Key", p.Key)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("Error sending request: %s\n", err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error reading response body: %s\n", err)
+		return nil, err
+	}
+	err = json.Unmarshal(body, &stack)
+	if err != nil {
+		return nil, err
+	}
+	return &stack, nil
 }
