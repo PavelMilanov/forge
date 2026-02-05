@@ -16,7 +16,7 @@ var getCmd = &cobra.Command{
 	Use:     "get [project]",
 	Short:   "Get project information",
 	Example: "forge env get dev | forge env get dev -c",
-	Args:    cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		secrets, err := vault.API.Get(ctx, args[0])

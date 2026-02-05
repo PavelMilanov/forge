@@ -1,14 +1,12 @@
 package deploy
 
 import (
-	"github.com/PavelMilanov/forge/api"
 	"github.com/spf13/cobra"
 )
 
 var (
 	deployStack    string
 	deployTemplate string
-	portainer      *api.Portainer
 )
 
 var DeployCmd = &cobra.Command{

@@ -19,7 +19,7 @@ var EnvCmd = &cobra.Command{
 	Example:   "forge env",
 	ValidArgs: []string{"init", "set", "get", "rollback", "versions"},
 	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
-	PreRunE: func(cmd *cobra.Command, args []string) error {
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := api.NewVaultClient(config.AppConfig)
 		if err != nil {
 			return err
