@@ -14,10 +14,15 @@ var stackCmd = &cobra.Command{
 	Args:      cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg := agent.NewAgent()
-		if err := cfg.DeployStack(deployStack); err != nil {
-			errors.DeployErrors(err)
+		if deployTemplate != "" {
+			if err := cfg.CreateStack(deployStack, deployTemplate); err != nil {
+				errors.DeployErrors(err)
+			}
+		} else {
+			if err := cfg.DeployStack(deployStack); err != nil {
+				errors.DeployErrors(err)
+			}
 		}
-		// fmt.Printf("stack %s не найден\n", deployStack)
 	},
 }
 
@@ -26,5 +31,4 @@ func init() {
 	stackCmd.Flags().StringVarP(&deployStack, "name", "n", "", "stack name")
 	stackCmd.Flags().StringVarP(&deployTemplate, "template", "t", "", "stack template")
 	stackCmd.MarkFlagRequired("name")
-	stackCmd.MarkFlagsRequiredTogether("template", "name")
 }

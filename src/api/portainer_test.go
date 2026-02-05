@@ -6,15 +6,20 @@ import (
 	"github.com/PavelMilanov/forge/config"
 )
 
-func TestGetStacks(t *testing.T) {
+func preRun() *Portainer {
 	env, err := config.NewEnv("../var/forge", "forge")
 	if err != nil {
-		t.Errorf("Error loading environment: %s", err)
+		return nil
 	}
 	portainer, err := NewPortainer(env.Agent.Credentials.Url, env.Agent.Credentials.Key)
 	if err != nil {
-		t.Errorf("Error creating Portainer client: %s", err)
+		return nil
 	}
+	return portainer
+}
+
+func TestGetStacks(t *testing.T) {
+	portainer := preRun()
 	data, err := portainer.GetStacks()
 	if err != nil {
 		t.Errorf("Error getting stacks: %s", err)
@@ -23,14 +28,7 @@ func TestGetStacks(t *testing.T) {
 }
 
 func TestGetTemplates(t *testing.T) {
-	env, err := config.NewEnv("../var/forge", "forge")
-	if err != nil {
-		t.Errorf("Error loading environment: %s", err)
-	}
-	portainer, err := NewPortainer(env.Agent.Credentials.Url, env.Agent.Credentials.Key)
-	if err != nil {
-		t.Errorf("Error creating Portainer client: %s", err)
-	}
+	portainer := preRun()
 	data, err := portainer.GetTemplates()
 	if err != nil {
 		t.Errorf("Error getting templates: %s", err)
@@ -39,14 +37,7 @@ func TestGetTemplates(t *testing.T) {
 }
 
 func TestGetStackFile(t *testing.T) {
-	env, err := config.NewEnv("../var/forge", "forge")
-	if err != nil {
-		t.Errorf("Error loading environment: %s", err)
-	}
-	portainer, err := NewPortainer(env.Agent.Credentials.Url, env.Agent.Credentials.Key)
-	if err != nil {
-		t.Errorf("Error creating Portainer client: %s", err)
-	}
+	portainer := preRun()
 	stacks, err := portainer.GetStacks()
 	if err != nil {
 		t.Errorf("Error getting stacks: %s", err)
@@ -59,14 +50,7 @@ func TestGetStackFile(t *testing.T) {
 }
 
 func TestGetTemplateFile(t *testing.T) {
-	env, err := config.NewEnv("../var/forge", "forge")
-	if err != nil {
-		t.Errorf("Error loading environment: %s", err)
-	}
-	portainer, err := NewPortainer(env.Agent.Credentials.Url, env.Agent.Credentials.Key)
-	if err != nil {
-		t.Errorf("Error creating Portainer client: %s", err)
-	}
+	portainer := preRun()
 	templates, err := portainer.GetTemplates()
 	if err != nil {
 		t.Errorf("Error getting templates: %s", err)
@@ -79,14 +63,7 @@ func TestGetTemplateFile(t *testing.T) {
 }
 
 func TestUpdateStack(t *testing.T) {
-	env, err := config.NewEnv("../var/forge", "forge")
-	if err != nil {
-		t.Errorf("Error loading environment: %s", err)
-	}
-	portainer, err := NewPortainer(env.Agent.Credentials.Url, env.Agent.Credentials.Key)
-	if err != nil {
-		t.Errorf("Error creating Portainer client: %s", err)
-	}
+	portainer := preRun()
 	stacks, err := portainer.GetStacks()
 	if err != nil {
 		t.Errorf("Error getting stacks: %s", err)
@@ -95,9 +72,7 @@ func TestUpdateStack(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error getting stack file: %s", err)
 	}
-	resp, err := portainer.UpdateStack(data)
-	if err != nil {
+	if err := portainer.UpdateStack(data); err != nil {
 		t.Errorf("Error updating stack: %s", err)
 	}
-	t.Logf("%s", resp)
 }

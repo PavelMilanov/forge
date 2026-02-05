@@ -6,6 +6,7 @@ import (
 
 type Agent interface {
 	DeployStack(name string) error
+	CreateStack(name string, template string) error
 }
 
 func NewAgent() Agent {
