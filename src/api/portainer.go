@@ -77,25 +77,25 @@ func (p *Portainer) GetStackFile(stack Stack) (*Stack, error) {
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.Url+"/api/stacks/"+strconv.Itoa(stack.ID)+"/file", nil)
 	if err != nil {
-		return nil, err
+		return &stack, err
 	}
 	req.Header.Add("X-API-Key", p.Key)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return &stack, err
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return &stack, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %s", resp.Status, string(body))
+		return &stack, fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 	defer resp.Body.Close()
 	err = json.Unmarshal(body, &stack)
 	if err != nil {
-		return nil, err
+		return &stack, err
 	}
 	return &stack, nil
 }
@@ -139,7 +139,7 @@ func (p *Portainer) UpdateStack(stack *Stack) error {
 		return fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 	defer resp.Body.Close()
-	fmt.Println(string(body))
+	// fmt.Println(string(body))
 	return nil
 }
 
@@ -179,26 +179,26 @@ func (p *Portainer) GetTemplateFile(stack Stack) (*Stack, error) {
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.Url+"/api/custom_templates/"+strconv.Itoa(stack.ID)+"/file", nil)
 	if err != nil {
-		return nil, err
+		return &stack, err
 	}
 	req.Header.Add("X-API-Key", p.Key)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return &stack, err
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return &stack, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %s", resp.Status, string(body))
+		return &stack, fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 
 	defer resp.Body.Close()
 	err = json.Unmarshal(body, &stack)
 	if err != nil {
-		return nil, err
+		return &stack, err
 	}
 	return &stack, nil
 }
@@ -239,7 +239,7 @@ func (p *Portainer) CreateStack(name, content string) error {
 		return fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 	defer resp.Body.Close()
-	fmt.Println(string(body))
+	//fmt.Println(string(body))
 	var postData struct {
 		ResourceControl struct {
 			Id int `json:"Id"`
@@ -288,6 +288,6 @@ func (p *Portainer) updateResourceControl(id int) error {
 		return fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 	defer resp.Body.Close()
-	fmt.Println(string(body))
+	// fmt.Println(string(body))
 	return nil
 }

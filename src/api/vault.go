@@ -26,10 +26,6 @@ Returns
 	error - ошибка при создании экземпляра Vault
 */
 func NewVaultClient(env *config.Env) (*Vault, error) {
-	// env, err := config.NewEnv(config.FORGE_PATH, config.FORGE_FILE)
-	// if err != nil {
-	// 	return nil, err
-	// }
 	cfg := api.DefaultConfig()
 	cfg.Address = env.Vault.Url
 	client, err := api.NewClient(cfg)
@@ -64,6 +60,5 @@ func (v *Vault) Login() error {
 		return err
 	}
 	v.Client.SetToken(authInfo.Auth.ClientToken)
-	// fmt.Printf("Успешная авторизация. Токен %s", authInfo.Auth.ClientToken)
 	return nil
 }

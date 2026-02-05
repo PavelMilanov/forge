@@ -45,7 +45,7 @@ func (a *PortainerAgent) DeployStack(name string) error {
 			fmt.Println("Stack updated")
 			return nil
 		}
-		fmt.Println("no stacks found")
+		// fmt.Println("no stacks found")
 	}
 	return nil
 }
@@ -88,7 +88,7 @@ func (a *PortainerAgent) CreateStack(stackName string, templateName string) erro
 			if err := portainer.CreateStack(stackName+"-"+templateName, buf.String()); err != nil {
 				return err
 			}
-			fmt.Println("Stack created")
+			// fmt.Println("Stack created")
 			return nil
 		}
 	}
