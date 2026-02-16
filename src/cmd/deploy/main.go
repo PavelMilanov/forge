@@ -11,7 +11,8 @@ var (
 
 var DeployCmd = &cobra.Command{
 	Use:       "deploy [command]",
-	Short:     "Manage deployment",
+	Short:     "Модуль развертывания",
+	Long:      "Модуль развертывания позволяет создавать и развертывать стеки на основе шаблонов или обновлять существующие стеки через выбранного агента",
 	Example:   "forge deploy",
 	ValidArgs: []string{"stack"},
 	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),

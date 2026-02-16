@@ -14,7 +14,8 @@ forge env get dev | grep 'tag:' | awk '{print $2}'
 */
 var getCmd = &cobra.Command{
 	Use:     "get [project]",
-	Short:   "Get project information",
+	Short:   "Получает информацию о проекте.",
+	Long:    "Получает информацию о проекте или выводит полный шаблон.",
 	Example: "forge env get dev | forge env get dev -c",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
