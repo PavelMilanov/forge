@@ -9,7 +9,7 @@ import (
 var stackCmd = &cobra.Command{
 	Use:       "stack",
 	Short:     "Stack deployment",
-	Example:   "forge deploy stack",
+	Example:   "forge deploy stack -n <stack_name> -t <stack_template>",
 	ValidArgs: []string{"stack"},
 	Args:      cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
