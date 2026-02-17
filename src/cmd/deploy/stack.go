@@ -15,7 +15,6 @@ forge deploy stack -n my-stack -t my-template
 
 Обновление стека:
 forge deploy stack -n my-stack
-
 `,
 	ValidArgs: []string{"stack"},
 	Args:      cobra.NoArgs,

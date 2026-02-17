@@ -15,7 +15,7 @@ var (
 
 var EnvCmd = &cobra.Command{
 	Use:       "env [command]",
-	Short:     "Модуль управления окружением",
+	Short:     "Модуль управления окружением.",
 	Long:      "Позволяет управлять окружением, включая инициализацию, настройку, слежение за изменениями и откат версий.",
 	Example:   "forge env",
 	ValidArgs: []string{"init", "set", "get", "rollback", "versions"},

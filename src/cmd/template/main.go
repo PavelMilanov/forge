@@ -13,7 +13,7 @@ var appTemplate *api.Template
 
 var TmpCmd = &cobra.Command{
 	Use:       "tmpl [command]",
-	Short:     "Manage template",
+	Short:     "Модуль управления шаблонами проектов",
 	Example:   "forge tmpl",
 	ValidArgs: []string{"list"},
 	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),

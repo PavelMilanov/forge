@@ -10,8 +10,8 @@ import (
 
 var versionsCmd = &cobra.Command{
 	Use:     "versions [project]",
-	Short:   "Выводит историю версий проекта",
-	Long:    "Выводит историю версий проекта, включая информацию о создании и изменении версий.",
+	Short:   "Вывод истории версий проекта.",
+	Long:    "Вывод истории версий проекта, включая информацию о создании и изменении версий.",
 	Example: "forge env versions my-app",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

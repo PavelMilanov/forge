@@ -13,11 +13,15 @@ import (
 forge env get dev | grep 'tag:' | awk '{print $2}'
 */
 var getCmd = &cobra.Command{
-	Use:     "get [project]",
-	Short:   "Получает информацию о проекте.",
-	Long:    "Получает информацию о проекте или выводит полный шаблон.",
-	Example: "forge env get dev | forge env get dev -c",
-	Args:    cobra.ExactArgs(1),
+	Use:   "get [project]",
+	Short: "Вывод информации о проекте.",
+	Long:  "Вывод информации о проекте или полной конфигурации в форматированном виде.",
+	Example: `Вывод информации об текущих значениях окружения:
+forge env get dev
+
+Вывод полной конфигурации проекта:
+forge env get dev -c`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		secrets, err := vault.API.Get(ctx, args[0])
