@@ -50,7 +50,7 @@ func (a *PortainerAgent) DeployStack(name string) error {
 	return nil
 }
 
-func (a *PortainerAgent) CreateStack(stackName string, templateName string) error {
+func (a *PortainerAgent) CreateStack(endpointId int, stackName string, templateName string) error {
 	portainer, err := api.NewPortainer(
 		config.AppConfig.Agent.Credentials.Url,
 		config.AppConfig.Agent.Credentials.Key)
@@ -85,7 +85,7 @@ func (a *PortainerAgent) CreateStack(stackName string, templateName string) erro
 			if err != nil {
 				return err
 			}
-			if err := portainer.CreateStack(stackName+"-"+templateName, buf.String()); err != nil {
+			if err := portainer.CreateStack(endpointId, stackName+"-"+templateName, buf.String()); err != nil {
 				return err
 			}
 			// fmt.Println("Stack created")
@@ -94,4 +94,18 @@ func (a *PortainerAgent) CreateStack(stackName string, templateName string) erro
 	}
 	fmt.Println("no templates found")
 	return nil
+}
+
+func (a *PortainerAgent) ListEndpoints() (map[int]string, error) {
+	portainer, err := api.NewPortainer(
+		config.AppConfig.Agent.Credentials.Url,
+		config.AppConfig.Agent.Credentials.Key)
+	if err != nil {
+		return nil, err
+	}
+	endpoints, err := portainer.GetEndpoints()
+	if err != nil {
+		return nil, err
+	}
+	return endpoints, nil
 }

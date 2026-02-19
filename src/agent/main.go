@@ -6,7 +6,8 @@ import (
 
 type Agent interface {
 	DeployStack(name string) error
-	CreateStack(name string, template string) error
+	CreateStack(endpointId int, stackName string, template string) error
+	ListEndpoints() (map[int]string, error)
 }
 
 func NewAgent() Agent {

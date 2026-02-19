@@ -203,11 +203,11 @@ func (p *Portainer) GetTemplateFile(stack Stack) (*Stack, error) {
 	return &stack, nil
 }
 
-func (p *Portainer) CreateStack(name, content string) error {
+func (p *Portainer) CreateStack(endpointId int, name, content string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	params := url.Values{}
-	params.Add("endpointId", strconv.Itoa(8)) // dev
+	params.Add("endpointId", strconv.Itoa(endpointId)) // dev
 	data := struct {
 		Name string `json:"name"`
 		File string `json:"stackFileContent"`
@@ -239,7 +239,6 @@ func (p *Portainer) CreateStack(name, content string) error {
 		return fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 	defer resp.Body.Close()
-	//fmt.Println(string(body))
 	var postData struct {
 		ResourceControl struct {
 			Id int `json:"Id"`
@@ -253,6 +252,42 @@ func (p *Portainer) CreateStack(name, content string) error {
 		return err
 	}
 	return nil
+}
+
+func (p *Portainer) GetEndpoints() (map[int]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.Url+"/api/endpoints", nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("X-API-Key", p.Key)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %s", resp.Status, string(body))
+	}
+	defer resp.Body.Close()
+	var rawData []struct {
+		ID   int    `json:"Id"`
+		Name string `json:"Name"`
+	}
+	err = json.Unmarshal(body, &rawData)
+	if err != nil {
+		return nil, err
+	}
+	result := make(map[int]string, len(rawData))
+	for _, e := range rawData {
+		result[e.ID] = e.Name
+	}
+	return result, nil
 }
 
 func (p *Portainer) updateResourceControl(id int) error {
@@ -288,6 +323,5 @@ func (p *Portainer) updateResourceControl(id int) error {
 		return fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 	defer resp.Body.Close()
-	// fmt.Println(string(body))
 	return nil
 }
