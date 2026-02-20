@@ -186,3 +186,13 @@ forge env rollback dev -v 2
 ```
 
 ##### deploy
+
+##### enable completion
+
+###### bash
+```bash
+forge completion bash > completion.sh
+chmod +x completion.sh
+sudo mv completion.sh /etc/bash_completion.d/
+source ./bashrc
+```

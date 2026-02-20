@@ -13,7 +13,8 @@ var params []string
 
 var setCmd = &cobra.Command{
 	Use:     "set [project]",
-	Short:   "Set values of the project",
+	Short:   "Устанавить значения проекта.",
+	Long:    "Устанавить значения проекта, учитывая шаблон и модель проекта.",
 	Example: "forge env set dev -p image=rosomilanov/container-registry",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

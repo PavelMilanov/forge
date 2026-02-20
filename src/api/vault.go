@@ -29,10 +29,10 @@ func NewVaultClient(env *config.Env) (*Vault, error) {
 	cfg := api.DefaultConfig()
 	cfg.Address = env.Vault.Url
 	client, err := api.NewClient(cfg)
-	client.KVv2(config.VAULT_PATH)
 	if err != nil {
 		return nil, err
 	}
+	client.KVv2(config.VAULT_PATH)
 	return &Vault{
 		ENV:    env,
 		Client: client,

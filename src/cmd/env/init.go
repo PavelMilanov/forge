@@ -12,10 +12,17 @@ import (
 )
 
 var initCmd = &cobra.Command{
-	Use:     "init [project]",
-	Short:   "Project initialization",
-	Example: "forge env init dev -t template.yaml -m compose",
-	Args:    cobra.ExactArgs(1),
+	Use:   "init [project]",
+	Short: "Инициализировать проект.",
+	Long:  "Инициализировать проект, создавая необходимые файлы и структуру для работы с проектом.",
+	Example: `Первоначальная инициализация проекта:
+forge env init my-app -t my-template.yaml -m compose
+
+Предварительно шаблон должен быть инициализирован.
+
+Модуль проекта по умолчанию - compose. Если не указан, то используется значение по умолчанию.
+`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		project, err := spec.NewSpec(projectMode)
