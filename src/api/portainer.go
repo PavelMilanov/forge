@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/PavelMilanov/forge/models"
 )
 
 /*
@@ -254,7 +256,7 @@ func (p *Portainer) CreateStack(endpointId int, name, content string) error {
 	return nil
 }
 
-func (p *Portainer) GetEndpoints() (map[int]string, error) {
+func (p *Portainer) GetEndpoints() ([]models.PortainerEndpoint, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.Url+"/api/endpoints", nil)
@@ -275,19 +277,13 @@ func (p *Portainer) GetEndpoints() (map[int]string, error) {
 		return nil, fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 	defer resp.Body.Close()
-	var rawData []struct {
-		ID   int    `json:"Id"`
-		Name string `json:"Name"`
-	}
-	err = json.Unmarshal(body, &rawData)
+	var data []models.PortainerEndpoint
+	err = json.Unmarshal(body, &data)
 	if err != nil {
 		return nil, err
 	}
-	result := make(map[int]string, len(rawData))
-	for _, e := range rawData {
-		result[e.ID] = e.Name
-	}
-	return result, nil
+
+	return data, nil
 }
 
 func (p *Portainer) updateResourceControl(id int) error {

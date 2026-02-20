@@ -1,7 +1,13 @@
 package deploy
 
 import (
-	"github.com/PavelMilanov/forge/agent"
+	"bytes"
+	"fmt"
+	"strings"
+	"text/template"
+
+	"github.com/PavelMilanov/forge/api"
+	"github.com/PavelMilanov/forge/config"
 	"github.com/PavelMilanov/forge/errors"
 	"github.com/spf13/cobra"
 )
@@ -26,27 +32,80 @@ forge deploy stack my-endpoint -n my-stack
 		if err := loadEndpointAliases(); err != nil {
 			return err
 		}
-		for _, name := range endpoints {
-			endpointAliases = append(endpointAliases, name)
+		for _, item := range endpoints {
+			endpointAliases = append(endpointAliases, item.Name)
 		}
 		cmd.ValidArgs = endpointAliases
 		return cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs)(cmd, args)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		for idx, name := range endpoints {
-			if args[0] == name {
-				deplyEndpoint = idx
-				return
+		for _, item := range endpoints {
+			if args[0] == item.Name {
+				deplyEndpoint = item.ID
 			}
 		}
-		cfg := agent.NewAgent()
+		cfg, err := api.NewPortainer(
+			config.AppConfig.Agent.Credentials.Url,
+			config.AppConfig.Agent.Credentials.Key)
+		if err != nil {
+			errors.DeployErrors(err)
+		}
 		if deployTemplate != "" {
-			if err := cfg.CreateStack(deplyEndpoint, deployStack, deployTemplate); err != nil {
+			tmpls, err := cfg.GetTemplates()
+			if err != nil {
 				errors.DeployErrors(err)
 			}
+			if len(tmpls) == 0 {
+				fmt.Println("no stacks found")
+			}
+			for _, tmpl := range tmpls {
+				if tmpl.TemplateName == deployTemplate {
+					proj, err := cfg.GetTemplateFile(tmpl)
+					if err != nil {
+						errors.DeployErrors(err)
+					}
+					var buf bytes.Buffer
+					data := map[string]string{
+						"stand": deployStack,
+					}
+					funcMap := template.FuncMap{
+						"port": func(s string) string {
+							return strings.TrimPrefix(s, "f") // Удаляет "f", если она есть в начале
+						},
+					}
+					t := template.Must(template.New("portainer").Option("missingkey=error").Funcs(funcMap).Parse(string(proj.TemplateFile)))
+					err = t.Execute(&buf, data)
+					if err != nil {
+						errors.DeployErrors(err)
+					}
+					if err := cfg.CreateStack(deplyEndpoint, deployStack+"-"+deployTemplate, buf.String()); err != nil {
+						errors.DeployErrors(err)
+					}
+					fmt.Println("Stack created")
+				}
+			}
 		} else {
-			if err := cfg.DeployStack(deployStack); err != nil {
+			stacks, err := cfg.GetStacks()
+			if err != nil {
 				errors.DeployErrors(err)
+			}
+			if len(stacks) == 0 {
+				fmt.Println("no stacks found")
+				errors.DeployErrors(err)
+			}
+			for _, stack := range stacks {
+				if stack.StackName == deployStack {
+					project, err := cfg.GetStackFile(stack)
+					if err != nil {
+						errors.DeployErrors(err)
+					}
+					if err := cfg.UpdateStack(project); err != nil {
+						errors.DeployErrors(err)
+					}
+					fmt.Println("Stack updated")
+					return
+				}
+				fmt.Println("no stacks found")
 			}
 		}
 	},
@@ -59,18 +118,21 @@ func init() {
 	stackCmd.MarkFlagRequired("name")
 }
 
+/*
+loadEndpointAliases загружает список доступных окружений из конфигурации агента.
+
+Returns
+
+	error - ошибка.
+*/
 func loadEndpointAliases() error {
-	// if len(endpointAliases) > 0 {
-	// 	return nil // Уже загружено
-	// }
-	var err error
-	cfg := agent.NewAgent()
-	endpoints, err = cfg.ListEndpoints()
+	cfg, err := api.NewPortainer(
+		config.AppConfig.Agent.Credentials.Url,
+		config.AppConfig.Agent.Credentials.Key)
+	data, err := cfg.GetEndpoints()
 	if err != nil {
 		return err
 	}
-	// for _, name := range endpoints {
-	// 	endpointAliases = append(endpointAliases, name)
-	// }
+	endpoints = data
 	return nil
 }

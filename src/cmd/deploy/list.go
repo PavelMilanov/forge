@@ -1,10 +1,10 @@
 package deploy
 
 import (
-	"fmt"
-
-	"github.com/PavelMilanov/forge/agent"
+	"github.com/PavelMilanov/forge/api"
+	"github.com/PavelMilanov/forge/config"
 	"github.com/PavelMilanov/forge/errors"
+	"github.com/PavelMilanov/forge/text"
 	"github.com/spf13/cobra"
 )
 
@@ -17,12 +17,19 @@ forge deploy list
 `,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg := agent.NewAgent()
-		endpoints, err := cfg.ListEndpoints()
+		cfg, err := api.NewPortainer(
+			config.AppConfig.Agent.Credentials.Url,
+			config.AppConfig.Agent.Credentials.Key)
 		if err != nil {
 			errors.DeployErrors(err)
 		}
-		fmt.Println(endpoints)
+		endpoints, err := cfg.GetEndpoints()
+		if err != nil {
+			errors.DeployErrors(err)
+		}
+		if err := text.PrintEndpoints(endpoints); err != nil {
+			errors.DeployErrors(err)
+		}
 	},
 }
 
