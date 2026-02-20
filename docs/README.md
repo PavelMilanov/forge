@@ -189,7 +189,7 @@ forge env rollback dev -v 2
 
 ##### enable completion
 
-##### bash
+###### bash
 ```bash
 forge completion bash > completion.sh
 chmod +x completion.sh
