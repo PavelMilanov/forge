@@ -1,30 +1,32 @@
-# Public GitHub Workflows
+# Public GitHub Actions
 
-`forge` can be used as a public reusable workflow from other repositories.
+`forge` can be used as a public composite action from other repositories.
 
-## Reusable workflow
+## Composite action
 
 Path in this repository:
 
-- `.github/workflows/forge-set-tag.yml`
+- `.github/actions/forge-set-tag/action.yml`
 
-This workflow:
+This action:
 
-- installs `forge` binary;
-- prepares `/var/forge/forge.yml` from repository secrets;
+- runs in the caller job as regular `steps` (not as a separate job);
+- requires `self-hosted` runner with preinstalled `forge`;
+- verifies `forge version` before executing commands;
+- requires existing `var/forge/forge.yml` on runner (Vault settings are read from this file);
+- requires `config_output_path` input with file extension (`.yml` or `.yaml`);
 - sets tag in Vault using `forge env set <project> -p tag=<short_sha>`;
 - renders deployment config using `forge env get <project> -c`.
 
 Note:
-- current reusable workflow covers only `env` operations;
+- current action covers only `env` operations;
 - stack deployment via Portainer should be executed in a separate job using:
   - `forge deploy stack file <endpoint> -n <stack-name> -f <stack.yml> --mode upsert`.
 
-## Required secrets in caller repo
+## Required preconditions on runner
 
-- `VAULT_URL`
-- `VAULT_ROLE_ID`
-- `VAULT_SECRET_ID`
+- `forge` binary is installed and available in `PATH`;
+- config file exists at `var/forge/forge.yml` with valid Vault credentials.
 
 ## Example usage from another repository
 
@@ -37,15 +39,20 @@ on:
 
 jobs:
   forge-vars:
-    uses: https://github.com/PavelMilanov/forge/.github/workflows/forge-set-tag.yml@v0.1.6
-    with:
-      project: stage
-      # optional: config_output_path: /var/forge/stage.yml
-      # optional: forge_download_url: https://github.com/PavelMilanov/forge/releases/download/v0.1.6/forge
-    secrets:
-      VAULT_URL: ${{ secrets.VAULT_URL }}
-      VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
-      VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
+    runs-on: self-hosted
+    outputs:
+      tag: ${{ steps.forge_vars.outputs.tag }}
+      config_path: ${{ steps.forge_vars.outputs.config_path }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set forge vars
+        id: forge_vars
+        uses: https://github.com/PavelMilanov/forge/.github/actions/forge-set-tag@v0.1.6
+        with:
+          project: stage
+          config_output_path: var/forge/stage.yml
 
   deploy:
     runs-on: self-hosted
@@ -59,7 +66,8 @@ jobs:
           docker --context=stage stack deploy -c "$CONFIG_PATH" --with-registry-auth --detach=false admin
 ```
 
-## Notes
+## Примечания
 
-- Keep `forge` repository public so external repositories can reference workflow via `uses`.
-- Use pinned tags in both `uses:` and `forge_download_url` for deterministic runs.
+- Убедитесь, что бинарник `forge` установлен и доступен в `PATH` на self-hosted runner.
+- Убедитесь, что перед запуском action существует файл `var/forge/forge.yml`.
+- Всегда передавайте `config_output_path` с расширением `.yml` или `.yaml`.
