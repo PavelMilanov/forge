@@ -12,11 +12,15 @@ import (
 var params []string
 
 var setCmd = &cobra.Command{
-	Use:     "set [project]",
-	Short:   "Устанавить значения проекта.",
-	Long:    "Устанавить значения проекта, учитывая шаблон и модель проекта.",
-	Example: "forge env set dev -p image=rosomilanov/container-registry",
-	Args:    cobra.ExactArgs(1),
+	Use:   "set [project]",
+	Short: "Обновить параметры deploy-модели проекта",
+	Long:  "Загружает текущий секрет проекта из Vault, валидирует переданные параметры относительно режима проекта (compose/swarm) и сохраняет обновленные значения как новую версию секрета.",
+	Example: `Обновить тег образа:
+forge env set dev -p tag=1.2.3
+
+Обновить образ и количество реплик (для swarm):
+forge env set stage -p image=registry.local/app -p replicas=3`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(params) == 0 {
 			errors.SpecErrors(fmt.Errorf("no parameters detected"))
@@ -43,6 +47,7 @@ var setCmd = &cobra.Command{
 	},
 }
 
+// init регистрирует подкоманду env set и флаг списка параметров обновления.
 func init() {
 	EnvCmd.AddCommand(setCmd)
 	setCmd.Flags().StringSliceVarP(&params, "param", "p", []string{}, "project parameter")

@@ -9,11 +9,15 @@ import (
 )
 
 var versionsCmd = &cobra.Command{
-	Use:     "versions [project]",
-	Short:   "Вывод истории версий проекта.",
-	Long:    "Вывод истории версий проекта, включая информацию о создании и изменении версий.",
-	Example: "forge env versions my-app",
-	Args:    cobra.ExactArgs(1),
+	Use:   "versions [project]",
+	Short: "Показать историю версий секрета проекта",
+	Long:  "Выводит список версий секрета проекта из Vault (номер версии и время создания). Команда полезна перед откатом, когда нужно выбрать корректную версию.",
+	Example: `forge env versions my-app
+
+# пример результата:
+# Version: 4
+# Created: 03/04/2026 15:24:11`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		content, err := vault.API.GetVersionsAsList(ctx, args[0])
@@ -29,6 +33,7 @@ Created: %s
 	},
 }
 
+// init регистрирует подкоманду env versions.
 func init() {
 	EnvCmd.AddCommand(versionsCmd)
 }

@@ -18,6 +18,7 @@ agent:
   credentials:
     url: "http://localhost:8081"
     key: "xxxx"
+    teams: [5, 7]
 
 `
 		if err := os.WriteFile("forge.yml", []byte(config), 0644); err != nil {

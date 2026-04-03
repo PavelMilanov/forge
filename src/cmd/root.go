@@ -13,12 +13,15 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:     "forge",
-	Short:   "cli-utility for managing ci/cd integration with infrastructure",
+	Short:   "CLI для управления переменными деплоя, шаблонами и развертыванием инфраструктуры",
+	Long:    "forge объединяет работу с Vault, шаблонами конфигурации и агентом деплоя. Используйте подкоманды env, tmpl и deploy для управления жизненным циклом конфигурации сервисов.",
+	Example: "forge env init admin-stage -t stack.yml -m swarm",
 	Version: config.VERSION,
 	Run: func(cmd *cobra.Command, args []string) {
 	},
 }
 
+// Execute запускает корневую CLI-команду и завершает процесс с кодом 1 при ошибке.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -26,6 +29,7 @@ func Execute() {
 	}
 }
 
+// init инициализирует конфигурацию приложения и подключает корневые подкоманды CLI.
 func init() {
 	cfg, err := config.NewEnv(config.FORGE_PATH, config.FORGE_FILE)
 	if err != nil {

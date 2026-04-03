@@ -15,6 +15,11 @@ This workflow:
 - sets tag in Vault using `forge env set <project> -p tag=<short_sha>`;
 - renders deployment config using `forge env get <project> -c`.
 
+Note:
+- current reusable workflow covers only `env` operations;
+- stack deployment via Portainer should be executed in a separate job using:
+  - `forge deploy stack file <endpoint> -n <stack-name> -f <stack.yml> --mode upsert`.
+
 ## Required secrets in caller repo
 
 - `VAULT_URL`
