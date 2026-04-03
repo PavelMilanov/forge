@@ -9,6 +9,7 @@ import (
 	"github.com/PavelMilanov/forge/cmd"
 )
 
+// main точка входа в приложение forge CLI.
 func main() {
 
 	cmd.Execute()

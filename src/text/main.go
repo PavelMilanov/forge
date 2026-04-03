@@ -7,6 +7,17 @@ import (
 	"github.com/PavelMilanov/forge/models"
 )
 
+/*
+PrintEndpoints форматирует и выводит список endpoint-ов в stdout.
+
+Params
+
+	items - список endpoint-ов.
+
+Returns
+
+	error - ошибка парсинга шаблона или рендера вывода.
+*/
 func PrintEndpoints(items []models.PortainerEndpoint) error {
 	tmpls := `Endpoints:
 {{ range . }}

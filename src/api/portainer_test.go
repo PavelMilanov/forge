@@ -11,7 +11,7 @@ func preRun() *Portainer {
 	if err != nil {
 		return nil
 	}
-	portainer, err := NewPortainer(env.Agent.Credentials.Url, env.Agent.Credentials.Key)
+	portainer, err := NewPortainer(env.Agent.Credentials.Url, env.Agent.Credentials.Key, env.Agent.Credentials.Teams)
 	if err != nil {
 		return nil
 	}

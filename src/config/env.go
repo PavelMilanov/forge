@@ -38,8 +38,9 @@ type registry struct {
 }
 
 type portainer struct {
-	Url string `mapstructure:"url"`
-	Key string `mapstructure:"key"`
+	Url   string `mapstructure:"url"`
+	Key   string `mapstructure:"key"`
+	Teams []int  `mapstructure:"teams"`
 }
 
 type agent struct {
@@ -78,6 +79,14 @@ func NewEnv(path, file string) (*Env, error) {
 	return &env, nil
 }
 
+/*
+NewAppConfig сохраняет глобальную конфигурацию приложения.
+
+Returns
+
+	*Env - сохраненная конфигурация приложения.
+	error - ошибка сохранения конфигурации.
+*/
 func NewAppConfig(env *Env) (*Env, error) {
 	AppConfig = env
 	return AppConfig, nil

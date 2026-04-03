@@ -1,0 +1,47 @@
+name: Forge Set Tag
+description: Sets short SHA tag in Vault and renders config using preinstalled forge on self-hosted runner
+
+inputs:
+  project:
+    description: Vault project name (e.g. admin-stage)
+    required: true
+  config_output_path:
+    description: Output config file path with extension (.yml or .yaml), e.g. var/forge/stage.yml
+    required: true
+
+outputs:
+  tag:
+    description: Short git sha tag
+    value: ${{ steps.set_variables.outputs.tag }}
+  config_path:
+    description: Rendered config file path
+    value: ${{ steps.set_variables.outputs.config_path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Verify forge
+      shell: bash
+      run: |
+        set -euo pipefail
+        command -v forge >/dev/null 2>&1
+        forge version
+
+    - name: Set variables
+      id: set_variables
+      shell: bash
+      run: |
+        set -euo pipefail
+        SHORT_SHA="${GITHUB_SHA:0:7}"
+        CONFIG_PATH="${{ inputs.config_output_path }}"
+        case "$CONFIG_PATH" in
+          *.yml|*.yaml) ;;
+          *)
+            echo "config_output_path must be a file with .yml or .yaml extension"
+            exit 1
+            ;;
+        esac
+        forge env set "${{ inputs.project }}" -p "tag=${SHORT_SHA}"
+        forge env get "${{ inputs.project }}" -c > "${CONFIG_PATH}"
+        echo "tag=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+        echo "config_path=${CONFIG_PATH}" >> "$GITHUB_OUTPUT"

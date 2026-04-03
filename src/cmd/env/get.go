@@ -14,13 +14,16 @@ forge env get dev | grep 'tag:' | awk '{print $2}'
 */
 var getCmd = &cobra.Command{
 	Use:   "get [project]",
-	Short: "Вывод информации о проекте.",
-	Long:  "Вывод информации о проекте или полной конфигурации в форматированном виде.",
+	Short: "Показать параметры проекта или сгенерированный конфиг",
+	Long:  "Получает секрет проекта из Vault и выводит либо текущие параметры deploy-модели, либо итоговый конфигурационный файл, срендеренный из шаблона (`-c`).",
 	Example: `Вывод информации об текущих значениях окружения:
 forge env get dev
 
 Вывод полной конфигурации проекта:
-forge env get dev -c`,
+forge env get dev -c
+
+Извлечение только tag в shell:
+forge env get dev | grep 'tag:' | awk '{print $2}'`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
@@ -50,6 +53,7 @@ forge env get dev -c`,
 	},
 }
 
+// init регистрирует подкоманду env get и флаг вывода итогового конфига.
 func init() {
 	EnvCmd.AddCommand(getCmd)
 	getCmd.Flags().BoolVarP(&envConfig, "config", "c", false, "project config secret")

@@ -13,15 +13,13 @@ import (
 
 var initCmd = &cobra.Command{
 	Use:   "init [project]",
-	Short: "Инициализировать проект.",
-	Long:  "Инициализировать проект, создавая необходимые файлы и структуру для работы с проектом.",
-	Example: `Первоначальная инициализация проекта:
+	Short: "Создать начальный секрет проекта в Vault",
+	Long:  "Инициализирует проект в Vault: сохраняет выбранный режим спецификации, имя шаблона и стартовые значения deploy-параметров. Если проект уже существует, команда не перезаписывает секрет и сообщает об этом.",
+	Example: `Инициализация проекта в режиме compose:
 forge env init my-app -t my-template.yaml -m compose
 
-Предварительно шаблон должен быть инициализирован.
-
-Модуль проекта по умолчанию - compose. Если не указан, то используется значение по умолчанию.
-`,
+Инициализация проекта в режиме swarm:
+forge env init admin-stage -t stack.yml -m swarm`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
@@ -48,6 +46,7 @@ forge env init my-app -t my-template.yaml -m compose
 	},
 }
 
+// init регистрирует подкоманду env init и настраивает обязательные флаги.
 func init() {
 	EnvCmd.AddCommand(initCmd)
 	initCmd.Flags().StringVarP(&projectTemplate, "template", "t", "", "path to project/to/template.yml")

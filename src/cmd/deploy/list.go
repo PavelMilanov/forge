@@ -10,8 +10,8 @@ import (
 
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "Список эндпоинтов",
-	Long:  "Позволяет получить список эндпоинтов.",
+	Short: "Показать доступные endpoint-ы агента",
+	Long:  "Запрашивает список endpoint-ов у Portainer API и выводит их в табличном виде. Полученные имена endpoint-ов используются как аргумент команды deploy stack.",
 	Example: `Получить список доступных эндпоинтов:
 forge deploy list
 `,
@@ -19,7 +19,8 @@ forge deploy list
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := api.NewPortainer(
 			config.AppConfig.Agent.Credentials.Url,
-			config.AppConfig.Agent.Credentials.Key)
+			config.AppConfig.Agent.Credentials.Key,
+			config.AppConfig.Agent.Credentials.Teams)
 		if err != nil {
 			errors.DeployErrors(err)
 		}
@@ -33,6 +34,7 @@ forge deploy list
 	},
 }
 
+// init регистрирует подкоманду deploy list.
 func init() {
 	DeployCmd.AddCommand(listCmd)
 }
