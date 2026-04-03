@@ -32,10 +32,11 @@ on:
 
 jobs:
   forge-vars:
-    uses: PavelMilanov/forge/.github/workflows/forge-set-tag.yml@main
+    uses: https://github.com/PavelMilanov/forge/.github/workflows/forge-set-tag.yml@v0.1.6
     with:
       project: stage
       # optional: config_output_path: /var/forge/stage.yml
+      # optional: forge_download_url: https://github.com/PavelMilanov/forge/releases/download/v0.1.6/forge
     secrets:
       VAULT_URL: ${{ secrets.VAULT_URL }}
       VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
@@ -56,4 +57,4 @@ jobs:
 ## Notes
 
 - Keep `forge` repository public so external repositories can reference workflow via `uses`.
-- Prefer pinning a stable ref (tag or release branch) instead of `@main` in production.
+- Use pinned tags in both `uses:` and `forge_download_url` for deterministic runs.

@@ -16,7 +16,7 @@ on:
         description: Direct URL to forge binary
         required: false
         type: string
-        default: https://github.com/PavelMilanov/forge/releases/latest/download/forge
+        default: https://github.com/PavelMilanov/forge/releases/download/v0.1.6/forge
     outputs:
       tag:
         description: Short git sha tag
