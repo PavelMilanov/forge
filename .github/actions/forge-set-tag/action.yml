@@ -25,7 +25,7 @@ runs:
       run: |
         set -euo pipefail
         command -v forge >/dev/null 2>&1
-        forge version
+        forge -v
 
     - name: Set variables
       id: set_variables
