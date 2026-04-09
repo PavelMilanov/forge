@@ -2,23 +2,31 @@
 
 `forge` можно использовать как публичный composite action из других репозиториев.
 
-## Composite action
+## Composite actions
 
-Путь в этом репозитории:
+Пути в этом репозитории:
 
 - `.github/actions/forge-set-tag/action.yml`
+- `.github/actions/forge-deploy-swarm/action.yml`
 
-Что делает action:
+Что делает `forge-set-tag`:
 
 - использует существующий `var/forge/forge.yml` на runner;
 - требует входной параметр `config_output_path` с расширением `.yml` или `.yaml`;
 - обновляет tag проекта в Vault через `forge env set <project> -p tag=<short_sha>`;
 - рендерит конфигурацию через `forge env get <project> -c`.
 
-Примечание:
-- текущий action покрывает только операции `env`;
-- деплой стека через Portainer нужно выполнять отдельным job, например:
-  - `forge deploy stack file <endpoint> -n <stack-name> -f <stack.yml> --mode upsert`.
+Что делает `forge-deploy-swarm`:
+- создает stack в Portainer, если его еще нет;
+- обновляет stack, если он уже существует;
+- работает с compose-файлом (`stack_file`) через Portainer API.
+- поддерживает назначение прав на управление стеком для команд Portainer через `team_ids`.
+
+Важно:
+- `forge-deploy-swarm` не принимает `portainer_url` и `portainer_token` через `with`;
+- action читает их только из переменных окружения:
+  - `PORTAINER_URL`
+  - `PORTAINER_TOKEN`
 
 ## Требования к runner
 
@@ -57,10 +65,25 @@ jobs:
     env:
       TAG: ${{ needs.forge-vars.outputs.tag }}
       CONFIG_PATH: ${{ needs.forge-vars.outputs.config_path }}
+      PORTAINER_URL: ${{ vars.PORTAINER_URL }}
+      PORTAINER_TOKEN: ${{ secrets.PORTAINER_TOKEN }}
     steps:
-      - name: Deploy
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Deploy swarm stack via Portainer
+        id: swarm
+        uses: https://github.com/PavelMilanov/forge/.github/actions/forge-deploy-swarm@main
+        with:
+          endpoint_name: stage
+          stack_name: admin
+          stack_file: ${{ env.CONFIG_PATH }}
+          team_ids: "5,7"
+
+      - name: Deployment summary
         run: |
-          docker --context=stage stack deploy -c "$CONFIG_PATH" --with-registry-auth --detach=false admin
+          echo "Action: ${{ steps.swarm.outputs.action }}"
+          echo "Stack ID: ${{ steps.swarm.outputs.stack_id }}"
 ```
 
 ## Примечания
@@ -69,3 +92,5 @@ jobs:
 - Перед запуском action проверьте, что `forge` доступен в `PATH` на self-hosted runner.
 - Перед запуском action проверьте, что файл `var/forge/forge.yml` уже создан.
 - Всегда передавайте `config_output_path` с расширением `.yml` или `.yaml`.
+- Для `forge-deploy-swarm` обязательно задайте `PORTAINER_URL` и `PORTAINER_TOKEN` через `env`.
+- `team_ids` в `forge-deploy-swarm` передается как CSV (например, `5` или `5,7`).

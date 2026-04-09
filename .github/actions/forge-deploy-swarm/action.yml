@@ -1,0 +1,106 @@
+name: Forge Deploy Swarm
+description: Create or update a Docker Swarm stack in Portainer from a compose file
+
+inputs:
+  endpoint:
+    description: Portainer endpoint name
+    required: true
+  stack:
+    description: Stack name in Portainer
+    required: true
+  stack_file:
+    description: Path to compose YAML file
+    required: true
+  prune:
+    description: Prune services on update (true/false)
+    required: false
+    default: "true"
+  pull_image:
+    description: Pull images on update (true/false)
+    required: false
+    default: "false"
+  team_ids:
+    description: Comma-separated Portainer team IDs for stack management access (e.g. 5,7)
+    required: false
+    default: ""
+
+outputs:
+  stack_id:
+    description: Stack ID in Portainer
+    value: ${{ steps.create.outputs.stack_id || steps.update.outputs.stack_id }}
+  action:
+    description: Action taken (created or updated)
+    value: ${{ steps.create.outputs.action || steps.update.outputs.action }}
+
+runs:
+  using: composite
+  steps:
+    - name: Validate prerequisites
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/scripts/validate.sh" \
+          "${{ inputs.endpoint }}" \
+          "${{ inputs.stack }}" \
+          "${{ inputs.stack_file }}"
+
+    - name: Resolve endpoint id
+      id: endpoint
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/scripts/resolve-endpoint-id.sh" \
+          "${{ inputs.endpoint }}"
+
+    - name: Resolve swarm id
+      id: swarm
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/scripts/resolve-swarm-id.sh" \
+          "${{ steps.endpoint.outputs.endpoint_id }}"
+
+    - name: Resolve stack id
+      id: stack
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/scripts/resolve-stack-id.sh" \
+          "${{ inputs.stack }}"
+
+    - name: Create stack
+      id: create
+      if: ${{ steps.stack.outputs.stack_id == '' }}
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/scripts/create-stack.sh" \
+          "${{ steps.endpoint.outputs.endpoint_id }}" \
+          "${{ inputs.stack }}" \
+          "${{ steps.swarm.outputs.swarm_id }}" \
+          "${{ inputs.stack_file }}"
+
+    - name: Update stack
+      id: update
+      if: ${{ steps.stack.outputs.stack_id != '' }}
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/scripts/update-stack.sh" \
+          "${{ steps.endpoint.outputs.endpoint_id }}" \
+          "${{ steps.stack.outputs.stack_id }}" \
+          "${{ inputs.stack_file }}" \
+          "${{ inputs.prune }}" \
+          "${{ inputs.pull_image }}"
+
+    - name: Resolve resource control id
+      id: resource_control
+      if: ${{ inputs.team_ids != '' && steps.create.outputs.resource_control_id == '' }}
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/scripts/resolve-resource-control-id.sh" \
+          "${{ steps.endpoint.outputs.endpoint_id }}" \
+          "${{ steps.create.outputs.stack_id || steps.update.outputs.stack_id }}"
+
+    - name: Apply team access
+      id: access
+      if: ${{ inputs.team_ids != '' }}
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/scripts/apply-team-access.sh" \
+          "${{ steps.create.outputs.resource_control_id || steps.resource_control.outputs.resource_control_id }}" \
+          "${{ inputs.team_ids }}"
