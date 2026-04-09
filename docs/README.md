@@ -84,7 +84,6 @@ forge templates list
 Алиасы команды:
 ```bash
 forge tpl list
-forge tmpl list
 ```
 
 Извлечение изменяемых переменных Go template из YAML-шаблона:
