@@ -5,6 +5,7 @@ import (
 
 	"github.com/PavelMilanov/forge/cmd/deploy"
 	"github.com/PavelMilanov/forge/cmd/env"
+	stackcmd "github.com/PavelMilanov/forge/cmd/stack"
 	"github.com/PavelMilanov/forge/cmd/template"
 	"github.com/PavelMilanov/forge/config"
 	"github.com/PavelMilanov/forge/errors"
@@ -39,4 +40,5 @@ func init() {
 	rootCmd.AddCommand(env.EnvCmd)
 	rootCmd.AddCommand(template.TmpCmd)
 	rootCmd.AddCommand(deploy.DeployCmd)
+	rootCmd.AddCommand(stackcmd.StackCmd)
 }

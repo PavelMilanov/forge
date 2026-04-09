@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/PavelMilanov/forge/errors"
-	"github.com/PavelMilanov/forge/spec"
 	"github.com/spf13/cobra"
 )
 
@@ -27,28 +26,33 @@ forge env get dev | grep 'tag:' | awk '{print $2}'`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		secrets, err := vault.API.Get(ctx, args[0])
+		state, err := loadProjectState(ctx, args[0])
 		if err != nil {
 			errors.VaultErrors(err)
 		}
-		data := secrets.Data
-		project, err := spec.NewSpec(data["mode"].(string))
-		project.Parse(data)
-		if err != nil {
-			errors.VaultErrors(err)
+		ref, ok := getEnvironment(state, environmentName)
+		if !ok {
+			errors.VaultErrors(fmt.Errorf("environment %q not found for project %q", environmentName, args[0]))
 		}
 		if envConfig {
-			tmpl, exists := data["template"].(string)
-			if !exists {
-				errors.VaultErrors(fmt.Errorf("value not found"))
+			if state.Template == "" {
+				errors.VaultErrors(fmt.Errorf("template is empty"))
 			}
-			std, err := project.Generate(tmpl)
+			std, err := renderTemplate(state.Template, renderContextForEnvironment(ref))
 			if err != nil {
 				errors.VaultErrors(err)
 			}
 			fmt.Print(std)
 		} else {
-			project.Print()
+			result := map[string]any{
+				"placement": ref.Placement,
+				"data":      ref.Data,
+			}
+			out, err := marshalPrettyJSON(result)
+			if err != nil {
+				errors.VaultErrors(err)
+			}
+			fmt.Println(out)
 		}
 	},
 }
@@ -57,4 +61,6 @@ forge env get dev | grep 'tag:' | awk '{print $2}'`,
 func init() {
 	EnvCmd.AddCommand(getCmd)
 	getCmd.Flags().BoolVarP(&envConfig, "config", "c", false, "project config secret")
+	getCmd.Flags().StringVarP(&environmentName, "env", "e", "", "environment name: stage | prod")
+	getCmd.MarkFlagRequired("env")
 }

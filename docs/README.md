@@ -1,11 +1,10 @@
 # Документация `forge`
 
-`forge` — CLI для управления переменными деплоя и версионированием конфигурации в HashiCorp Vault.
+`forge` — CLI для управления данными окружений и конфигурацией деплоя в HashiCorp Vault.
 
 Поддерживаемые сценарии:
-- хранение текущего состояния деплоя (`image`, `tag`, `replicas`) в Vault;
+- хранение текущего состояния окружений (`data`) в Vault;
 - генерация итогового YAML из Go-шаблона;
-- обновление/откат версий секрета;
 - деплой и обновление стеков через Portainer API.
 
 ## Конфигурация
@@ -44,40 +43,34 @@ agent:
 
 Путь к шаблонам: `var/forge/templates`.
 
-## Спецификации
+## Модель данных `env`
 
-### Compose
-
-Отслеживаемые параметры:
-- `image`
-- `tag`
-
-Пример шаблона:
-```yaml
-services:
-  registry:
-    image: {{.Image}}:{{.Tag}}
+`forge env` использует проектный секрет со структурой:
+```json
+{
+  "template": "api-stack.yml",
+  "environments": {
+    "stage": {
+      "placement": {
+        "enabled": false
+      },
+      "data": {}
+    },
+    "prod": {
+      "placement": {
+        "enabled": false
+      },
+      "data": {}
+    }
+  }
+}
 ```
 
-### Swarm
-
-Отслеживаемые параметры:
-- `image`
-- `tag`
-- `replicas`
-
-Пример шаблона:
-```yaml
-services:
-  registry:
-    image: {{.Image}}:{{.Tag}}
-    deploy:
-      replicas: {{.Replicas}}
-```
-
-### Kubernetes
-
-Режим `kubernetes` доступен как значение флага `-m`, но в текущей версии реализован как заглушка и не генерирует рабочую конфигурацию.
+Ключевые правила:
+- поле `mode` не используется;
+- для каждого окружения хранится своя независимая `data`;
+- `placement` хранится отдельно от `data`;
+- рендер (`env get -c`) выполняется по `template` и объединенному контексту `environments.<env>.{placement,data}`.
 
 ## Команды
 
@@ -94,46 +87,63 @@ forge tpl list
 forge tmpl list
 ```
 
+Извлечение изменяемых переменных Go template из YAML-шаблона:
+```bash
+forge templates vars <template.yml>
+```
+
 ### Окружение (`env`)
 
 Инициализация проекта:
 ```bash
-forge env init <project> -t <template.yml> -m <compose|swarm|kubernetes>
+forge env init <project> -e <environment> -t <template.yml>
 ```
 
 Пример:
 ```bash
-forge env init dev -t registry.yml -m compose
+forge env init api -e stage -t api-stack.yml
+```
+`init` автоматически создает `environments.<env>.placement` + `environments.<env>.data` и заполняет `data` ключами из `{{...}}` в шаблоне.
+
+Добавление нового окружения в существующий проект:
+```bash
+forge env add <project> -e <environment>
+```
+`add` также автоматически заполняет `data` ключами из текущего шаблона проекта и выставляет `placement.enabled=false`.
+
+Удаление окружения из проекта:
+```bash
+forge env delete <project> -e <environment>
 ```
 
 Обновление параметров:
 ```bash
-forge env set <project> -p tag=<value> -p image=<value>
+forge env set <project> -e <environment> -p key=value
 ```
 
-Для `swarm` также доступен параметр `replicas`:
+Пример вложенных ключей:
 ```bash
-forge env set stage -p tag=1.2.3 -p replicas=3
+forge env set api -e stage -p api.image=registry.service/app:1.2.3 -p api.replicas=2
+```
+
+Настройка `placement` через переменные окружения:
+```bash
+forge env set api -e stage -p placement.enabled=true -p placement.constraint=node.role==worker
+```
+
+Отключение `placement`:
+```bash
+forge env set api -e stage -p placement.enabled=false
 ```
 
 Просмотр текущих значений:
 ```bash
-forge env get <project>
+forge env get <project> -e <environment>
 ```
 
 Рендер итогового конфигурационного файла из шаблона:
 ```bash
-forge env get <project> -c
-```
-
-История версий секрета:
-```bash
-forge env versions <project>
-```
-
-Откат к версии:
-```bash
-forge env rollback <project> -v <version>
+forge env get <project> -e <environment> -c
 ```
 
 ### Деплой (`deploy`)
@@ -170,21 +180,32 @@ forge deploy stack refresh <endpoint> -n <stack-name>
 1. Добавить шаблон в `var/forge/templates`.
 2. Инициализировать проект:
 ```bash
-forge env init admin-stage -t stack.yml -m swarm
+forge env init api -e stage -t api-stack.yml
 ```
 3. Обновить тег:
 ```bash
-forge env set admin-stage -p tag=sha-abc1234
+forge env set api -e stage -p api.image=registry.service.uhvahta.ru/api/backend:sha-abc1234 -p api.replicas=1
 ```
 4. Сгенерировать итоговый YAML:
 ```bash
-forge env get admin-stage -c > /tmp/admin-stage.yml
+forge env get api -e stage -c > /tmp/api-stage.yml
 ```
 
 ## Примечания
 
-- При `init` в Vault создается секрет с полями `deploy`, `mode`, `template`.
-- Если проект уже существует в Vault, команда `env init` выводит `The project already initialized`.
+- При `init` в Vault создается/обновляется структура `template + environments.<env>.{placement,data}`.
+- Для команд `env get/set` флаг `-e/--env` обязателен.
+- Для условного `placement` используйте блок `if` в шаблоне:
+```yaml
+deploy:
+  mode: replicated
+  {{- if .placement.enabled }}
+  placement:
+    constraints:
+      - "{{ .placement.constraint }}"
+  {{- end }}
+  replicas: {{ .api.replicas }}
+```
 - Примеры состояния секрета после инициализации:  
   ![init_compose](/docs/images/init_compose.png)  
   ![init_swarm](/docs/images/init_swarm.png)

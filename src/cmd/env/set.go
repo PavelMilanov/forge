@@ -3,9 +3,9 @@ package env
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/PavelMilanov/forge/errors"
-	"github.com/PavelMilanov/forge/spec"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +14,7 @@ var params []string
 var setCmd = &cobra.Command{
 	Use:   "set [project]",
 	Short: "Обновить параметры deploy-модели проекта",
-	Long:  "Загружает текущий секрет проекта из Vault, валидирует переданные параметры относительно режима проекта (compose/swarm) и сохраняет обновленные значения как новую версию секрета.",
+	Long:  "Загружает текущий секрет проекта из Vault и обновляет ключи в environments.<env>.data по переданным параметрам key=value.",
 	Example: `Обновить тег образа:
 forge env set dev -p tag=1.2.3
 
@@ -26,24 +26,41 @@ forge env set stage -p image=registry.local/app -p replicas=3`,
 			errors.SpecErrors(fmt.Errorf("no parameters detected"))
 		}
 		ctx := context.Background()
-		secrets, err := vault.API.Get(ctx, args[0])
+		state, err := loadProjectState(ctx, args[0])
 		if err != nil {
 			errors.VaultErrors(err)
 		}
-		data := secrets.Data
-		project, err := spec.NewSpec(data["mode"].(string))
-		if err != nil {
-			errors.SpecErrors(err)
+		ref, ok := getEnvironment(state, environmentName)
+		if !ok {
+			errors.VaultErrors(fmt.Errorf("environment %q not found for project %q", environmentName, args[0]))
 		}
-		project.Parse(data)
-		if err := project.Update(params); err != nil {
-			errors.SpecErrors(err)
+		for _, param := range params {
+			key, value, err := parseParam(param)
+			if err != nil {
+				errors.SpecErrors(err)
+			}
+			if key == "placement" || strings.HasPrefix(key, "placement.") {
+				placementPath := strings.TrimPrefix(key, "placement.")
+				if placementPath == "" {
+					errors.SpecErrors(fmt.Errorf("placement root is not assignable, use placement.<field>=<value>"))
+				}
+				setPath(ref.Placement, placementPath, value)
+				continue
+			}
+			setPath(ref.Data, key, value)
 		}
-		_, err = vault.API.Patch(ctx, args[0], map[string]any{"deploy": project})
+		state.Environments[environmentName] = ref
+		if err := saveProjectState(ctx, args[0], state); err != nil {
+			errors.VaultErrors(err)
+		}
+		out, err := marshalPrettyJSON(map[string]any{
+			"placement": ref.Placement,
+			"data":      ref.Data,
+		})
 		if err != nil {
 			errors.VaultErrors(err)
 		}
-		project.Print()
+		fmt.Println(out)
 	},
 }
 
@@ -51,4 +68,6 @@ forge env set stage -p image=registry.local/app -p replicas=3`,
 func init() {
 	EnvCmd.AddCommand(setCmd)
 	setCmd.Flags().StringSliceVarP(&params, "param", "p", []string{}, "project parameter")
+	setCmd.Flags().StringVarP(&environmentName, "env", "e", "", "environment name: stage | prod")
+	setCmd.MarkFlagRequired("env")
 }

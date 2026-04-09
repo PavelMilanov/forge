@@ -7,6 +7,7 @@ STACK_FILE="${3:?stack_file is required}"
 
 command -v curl >/dev/null 2>&1
 command -v jq >/dev/null 2>&1
+command -v forge >/dev/null 2>&1
 
 test -n "${PORTAINER_URL:-}"
 test -n "${PORTAINER_TOKEN:-}"

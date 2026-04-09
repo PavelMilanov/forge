@@ -17,7 +17,7 @@ var TmpCmd = &cobra.Command{
 	Short:     "Работа с шаблонами конфигурации проектов",
 	Long:      "Группа команд templates предназначена для управления шаблонами, которые используются в env get -c для генерации итоговых YAML-файлов по данным из Vault.",
 	Example:   "forge templates list",
-	ValidArgs: []string{"list"},
+	ValidArgs: []string{"list", "vars"},
 	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := api.NewTemplate()
