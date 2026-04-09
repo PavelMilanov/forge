@@ -1,0 +1,65 @@
+name: Forge Set Env
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        description: Vault project name (e.g. api)
+        required: true
+        type: string
+      environment:
+        description: Environment name (e.g. stage or prod)
+        required: true
+        type: string
+      params:
+        description: Multiline list of key=value pairs for forge env set -p
+        required: true
+        type: string
+    outputs:
+      applied_params:
+        description: Number of applied -p parameters
+        value: ${{ jobs.set-env.outputs.applied_params }}
+
+jobs:
+  set-env:
+    runs-on: self-hosted
+    outputs:
+      applied_params: ${{ steps.set.outputs.applied_params }}
+    steps:
+      - name: Verify forge
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v forge >/dev/null 2>&1
+          forge -v
+
+      - name: Set env params
+        id: set
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROJECT="${{ inputs.project }}"
+          ENVIRONMENT="${{ inputs.environment }}"
+          PARAMS_RAW="${{ inputs.params }}"
+
+          test -n "$PROJECT"
+          test -n "$ENVIRONMENT"
+
+          PARAM_ARGS=()
+          PARAM_COUNT=0
+
+          while IFS= read -r line; do
+            line="$(printf '%s' "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+            [ -z "$line" ] && continue
+            PARAM_ARGS+=(-p "$line")
+            PARAM_COUNT=$((PARAM_COUNT + 1))
+          done <<< "$PARAMS_RAW"
+
+          if [ "$PARAM_COUNT" -eq 0 ]; then
+            echo "params must contain at least one key=value pair"
+            exit 1
+          fi
+
+          forge env set "$PROJECT" -e "$ENVIRONMENT" "${PARAM_ARGS[@]}"
+
+          echo "applied_params=$PARAM_COUNT" >> "$GITHUB_OUTPUT"

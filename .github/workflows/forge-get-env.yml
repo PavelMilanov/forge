@@ -1,0 +1,49 @@
+name: Forge Get Env
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        description: Vault project name (e.g. api)
+        required: true
+        type: string
+      environment:
+        description: Environment name (e.g. stage or prod)
+        required: true
+        type: string
+    outputs:
+      content:
+        description: Command output content
+        value: ${{ jobs.get-env.outputs.content }}
+
+jobs:
+  get-env:
+    runs-on: self-hosted
+    outputs:
+      content: ${{ steps.get.outputs.content }}
+    steps:
+      - name: Verify forge
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v forge >/dev/null 2>&1
+          forge -v
+
+      - name: Get env
+        id: get
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROJECT="${{ inputs.project }}"
+          ENVIRONMENT="${{ inputs.environment }}"
+
+          test -n "$PROJECT"
+          test -n "$ENVIRONMENT"
+
+          CONTENT="$(forge env get "$PROJECT" -e "$ENVIRONMENT")"
+
+          {
+            echo "content<<__FORGE_GET_ENV__"
+            printf "%s\n" "$CONTENT"
+            echo "__FORGE_GET_ENV__"
+          } >> "$GITHUB_OUTPUT"
